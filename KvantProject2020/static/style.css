@@ -1,0 +1,29 @@
+.background {
+    width: 100vw;
+    height: 100vh;
+    background-color: darkslateblue;
+    text-align: center;
+}
+.head-nav {
+    background-color: gainsboro;
+    height: 5vh;
+}
+.title {
+    font-size: 35px;
+}
+.main-link-title {
+    margin: 5vh 2vw 2vh 5vw;
+    width: 25vw;
+    height: 60vh;
+    float: left;
+    padding-top: 30px;
+}
+.main-link {
+    margin-top: 20px;
+}
+.card-body {
+    background: gainsboro;
+}
+.card-img-top {
+    border-bottom: 1px solid lightgray;
+}
