@@ -27,3 +27,9 @@
 .card-img-top {
     border-bottom: 1px solid lightgray;
 }
+.form-filter {
+    margin-top: 20px;
+    margin-left: 20px;
+    float: left;
+    color: gainsboro;
+}
