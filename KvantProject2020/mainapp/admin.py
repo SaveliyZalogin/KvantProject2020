@@ -1,5 +1,4 @@
 from django.contrib import admin
-from . import models
+from .models import Processor
 
-admin.site.register(models.Result, admin.ModelAdmin)
-
+admin.site.register(Processor, admin.ModelAdmin)

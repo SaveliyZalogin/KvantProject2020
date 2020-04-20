@@ -7,16 +7,16 @@
     <link rel="stylesheet" href={% static "style.css" %}>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
 </head>
-<body>
-    <div class="background">
+<body style="background: darkslateblue; text-align: center">
+    <div>
         {% block navmenu %}
             <div class="head-nav">
                 <nav class="navbar navbar-expand-lg navbar-light">
-                  <a class="navbar-brand" href="{% url "Main" %}">PC Master</a>
+                  <a class="navbar-brand" href="{% url "main" %}">PC Master</a>
                   <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul class="navbar-nav mr-auto">
                       <li class="nav-item active">
-                        <a class="nav-link" href="{% url "Configurate" %}">Собрать ПК<span class="sr-only">(current)</span></a>
+                        <a class="nav-link" href="{% url "processors" %}">Собрать ПК<span class="sr-only">(current)</span></a>
                       </li>
                       <li class="nav-item active">
                         <a class="nav-link" href="#">Подобрать готовый</a>
@@ -33,8 +33,8 @@
                         </div>
                       </li>
                     </ul>
-                    <form class="form-inline my-2 my-lg-0">
-                      <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+                    <form class="form-inline my-2 my-lg-0" action="{% url 'results' %}">
+                      <input class="form-control mr-sm-2" name="search" type="search" placeholder="Search" aria-label="Search">
                       <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
                     </form>
                   </div>
@@ -44,26 +44,26 @@
 
         {% block content %}
             <div class="main-link-title card">
-                <img height="400px" src="https://static.baza.farpost.ru/v/1572172702073_bulletin" class="card-img-top">
+                <img height="400px" src="https://st.overclockers.ru/c/350/300//images/preview/8XBnVDleGvIFIVG8.jpg" class="card-img-top">
                 <div class="card-body">
-                    <h5 class="card-title">Собрать ПК</h5>
-                    <p class="card-text">Здесь можно посмотреть варианты сборок ПК в определённом бюджете</p>
-                    <a class="btn btn-primary" href="{% url "Configurate" %}">Подробнее...</a>
+                    <h5 class="card-title">Процессоры</h5>
+                    <p class="card-text">Здесь можно посмотреть процессоры</p>
+                    <a class="btn btn-primary" href="{% url "processors" %}">Подробнее...</a>
                 </div>
             </div>
             <div class="main-link-title card">
-                <img height="400px" src="{% static "images/sistemniyblock.png" %}" class="card-img-top">
+                <img height="400px" src="https://i.playground.ru/p/zsmjRSMnt_vGKixTZq9Nyg.png" class="card-img-top">
                 <div class="card-body">
-                    <h5 class="card-title">Подобрать готовый компьютер</h5>
-                    <p class="card-text">Здесь можно посмотреть варианты системных блоков или ноутбуков в определённом бюджете</p>
+                    <h5 class="card-title">Видеокарты</h5>
+                    <p class="card-text">Здесь можно посмотреть видеокарты</p>
                     <a class="btn btn-primary" href="#">Подробнее...</a>
                 </div>
             </div>
             <div class="main-link-title card">
-                <img height="400px" src="https://kvadrum-1c.ru/upload/iblock/6b3/6b3d6501018477645b44d54829caeddc.png" alt="Представьте себе вместо этого текста гору мышек и клавиатур" class="card-img-top">
+                <img height="400px" src="https://peredpokupkoy.ru/img/kompiutery/komplektuiushchie/materinskie-platy/materinskie-platy-asus/otzyvy-asus-z170m-e-d3-12793087.jpg" alt="Представьте себе вместо этого текста гору мышек и клавиатур" class="card-img-top">
                 <div class="card-body">
-                    <h5 class="card-title">Подобрать переферию к компьютеру</h5>
-                    <p class="card-text">Здесь можно посмотреть варианты переферии определённом бюджете</p>
+                    <h5 class="card-title">Материнские платы</h5>
+                    <p class="card-text">Здесь можно посмотреть материнские платы</p>
                     <a class="btn btn-primary" href="#">Подробнее...</a>
                 </div>
             </div>

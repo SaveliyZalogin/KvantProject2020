@@ -1,11 +1,12 @@
-{% extends "processorList.html" %}
+{% extends "index.html" %}
 
     {% block content %}
-        {% for processor in processsors %}
+        {% for processor in processors %}
             <div class="processor">
                 <h3>{{ processor.title }}</h3>
             </div>
         {% endfor %}
+
     {% endblock %}
 </body>
 </html>

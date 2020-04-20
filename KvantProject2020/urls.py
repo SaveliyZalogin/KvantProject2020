@@ -19,7 +19,7 @@ from .mainapp import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', views.index, name='Main'),
-    path('configurate/', views.configurate, name='Configurate'),
+    path('', views.index, name='main'),
+    path('configurate/', views.processor_list, name='processors'),
     path('results/', views.results, name='results'),
 ]

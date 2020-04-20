@@ -1,6 +1,5 @@
 .background {
     width: 100vw;
-    height: 100vh;
     background-color: darkslateblue;
     text-align: center;
 }
@@ -13,7 +12,7 @@
 }
 .main-link-title {
     margin: 5vh 2vw 2vh 5vw;
-    width: 25vw;
+    width: 23vw;
     height: 60vh;
     float: left;
     padding-top: 30px;
@@ -32,4 +31,9 @@
     margin-left: 20px;
     float: left;
     color: gainsboro;
+}
+.processor {
+    background: gainsboro;
+    width: 20%;
+    margin: 20px 20px 20px 10%;
 }

@@ -2,68 +2,46 @@ from django.shortcuts import render
 from urllib.request import urlopen
 import re
 from . import models
-import re
+
+
+def parse():
+    title_list = []
+    url = urlopen('https://www.citilink.ru/search/?text=%D0%BF%D1%80%D0%BE%D1%86%D0%B5%D1%81%D1%81%D0%BE%D1%80%D1%8B')
+    html = url.read().decode('UTF-8')
+    regex = '<span class="image_container"></span>(.*)&nbsp;(.*)\s{16}</a>'
+    price_list = re.findall(regex, html)
+    for i in price_list:
+        title = i[0] + ' ' + i[1]
+        title_list.append(title)
+    for title in title_list:
+        try:
+            models.Processor.objects.get(title=title)
+        except:
+            models.Processor.objects.create_unit(title=title)
 
 
 def index(request):
+    parse()
     context = {
-
 
     }
     return render(request, "index.html", context)
 
 
-def configurate(request):
+def processor_list(request):
+    all_processors = models.Processor.objects.all()
     context = {
-
+        'processors': all_processors
 
     }
-    return render(request, "filters.html", context)
+    return render(request, "processorList.html", context)
 
 
 def results(request):
-    sborka = None
-    all_results = models.Result.objects.all()
-    CPU = ''
-    GPU = ''
-    list_CPUs = ['Intel Core i5 @12000@', 'AMD Ryzen 5 3600 @16000@', 'Intel Core i7 @20000@']
-    list_GPUs = ['Geforce GTX 1060 {18000}', 'Geforce GTX 1660 super {22000}', 'Geforce GTX 2060 super {30000}']
-    budget = request.GET.get('budget', '')
-    one_piece_of_bdg = int(budget) // 8
-    CPU_price = one_piece_of_bdg * 2
-    GPU_price = one_piece_of_bdg * 3
-    c = []
-    for compl in list_CPUs:
-        a = re.findall('.*\s*@(\d*)@', compl)
-        b = re.findall('(.*\s*)@\d*@', compl)
-        if CPU_price - int(a[0]) > -500:
-            c.append(CPU_price - int(a[0]))
-
-    for compl in list_GPUs:
-        a = re.findall('.*\s*{(\d*)}', compl)
-        b = re.findall('(.*\s*){\d*}', compl)
-        if int(a[0]) in range(GPU_price - 1250, GPU_price + 1250):
-            GPU += str(b[0])
-            print(GPU)
-
-    # if int(CPU_price) in range(0, 12000):
-    #     CPU += 'Intel Core i5'
-    # elif int(CPU_price) in range(0, 20000):
-    #     CPU += 'Intel Core i7'
-    #
-    # if int(GPU_price) in range(15000, 20000):
-    #     GPU += 'Geforce GTX 1660 super'
-    # elif int(GPU_price) in range(20000, 40000):
-    #     GPU += 'Geforce GTX 2060 super'
-
-    try:
-        sborka = models.Result.objects.get(price=budget, CPU=CPU, GPU=GPU)
-    except:
-        result = models.Result.objects.create_result(price=budget, CPU=CPU, GPU=GPU)
-        sborka = models.Result.objects.get(price=budget, CPU=CPU, GPU=GPU)
-
+    search = request.GET.get('search', '')
+    processors = models.Processor.objects.filter(title__icontains=search)
     context = {
-        'budget': budget,
-        'sborka': sborka,
+        'processsors': processors
+
     }
     return render(request, "results.html", context)
