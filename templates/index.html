@@ -43,30 +43,33 @@
         {% endblock %}
 
         {% block content %}
+            <a role="button" href="{% url 'processors' %}">
             <div class="main-link-title card">
                 <img height="400px" src="https://st.overclockers.ru/c/350/300//images/preview/8XBnVDleGvIFIVG8.jpg" class="card-img-top">
                 <div class="card-body">
                     <h5 class="card-title">Процессоры</h5>
                     <p class="card-text">Здесь можно посмотреть процессоры</p>
-                    <a class="btn btn-primary" href="{% url "processors" %}">Подробнее...</a>
                 </div>
             </div>
+            </a>
+            <a role="button" href="#">
             <div class="main-link-title card">
                 <img height="400px" src="https://i.playground.ru/p/zsmjRSMnt_vGKixTZq9Nyg.png" class="card-img-top">
                 <div class="card-body">
                     <h5 class="card-title">Видеокарты</h5>
                     <p class="card-text">Здесь можно посмотреть видеокарты</p>
-                    <a class="btn btn-primary" href="#">Подробнее...</a>
                 </div>
             </div>
+            </a>
+            <a role="button" href="#">
             <div class="main-link-title card">
                 <img height="400px" src="https://peredpokupkoy.ru/img/kompiutery/komplektuiushchie/materinskie-platy/materinskie-platy-asus/otzyvy-asus-z170m-e-d3-12793087.jpg" alt="Представьте себе вместо этого текста гору мышек и клавиатур" class="card-img-top">
                 <div class="card-body">
                     <h5 class="card-title">Материнские платы</h5>
                     <p class="card-text">Здесь можно посмотреть материнские платы</p>
-                    <a class="btn btn-primary" href="#">Подробнее...</a>
                 </div>
             </div>
+            </a>
         {% endblock %}
     </div>
 <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>

@@ -14,7 +14,7 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, re_path
 from .mainapp import views
 
 urlpatterns = [
@@ -22,4 +22,5 @@ urlpatterns = [
     path('', views.index, name='main'),
     path('configurate/', views.processor_list, name='processors'),
     path('results/', views.results, name='results'),
+    re_path(r'^news/(?P<processor_id>\d+)$', views.processor, name="processor"),
 ]

@@ -2,9 +2,12 @@
 
     {% block content %}
         {% for processor in processors %}
+            <a role="button" style="color: black; text-decoration: none" href="{% url 'processor' processor.id %}">
             <div class="processor">
+                <img src="{{ processor.image }}">
                 <h3>{{ processor.title }}</h3>
             </div>
+            </a>
         {% endfor %}
 
     {% endblock %}
