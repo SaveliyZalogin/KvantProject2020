@@ -39,6 +39,7 @@
     padding: 10px 10px 10px 10px;
     -webkit-border-radius: 13px 13px 20px 20px;
     -moz-border-radius: 10px 10px 20px 20px;
+    float: left;
 }
 .card-text {
     color: black;
