@@ -7,12 +7,13 @@ from bs4 import BeautifulSoup
 
 
 def parse():
-    r = requests.get('https://www.citilink.ru/catalog/computers_and_notebooks/parts/cpu/')
+    r = requests.get('https://www.dns-shop.ru/catalog/17a899cd16404e77/processory/?q=cpu')
     soup = BeautifulSoup(r.content, 'html.parser')
 
     name = soup.find_all('a', class_="link_gtm-js link_pageevents-js ddl_product_link")
     price = soup.find_all('ins', class_="subcategory-product-item__price-num")
     link = soup.find_all('a', class_="link_gtm-js link_pageevents-js ddl_product_link")
+
 
     for i in range(0, len(name)):
         title = name[i].get_text()
