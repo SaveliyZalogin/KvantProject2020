@@ -38,7 +38,7 @@
     margin: 20px 20px 20px 10%;
     padding: 10px 10px 10px 10px;
     -webkit-border-radius: 13px 13px 20px 20px;
-    -moz-border-radius: 10px 10px 20px 20px;
+    -moz-border-radius: 13px 13px 20px 20px;
     float: left;
 }
 .card-text {
@@ -47,8 +47,14 @@
 .card-title {
     color: black;
 }
-.prcsr-title {
+.prcsr-title, .prcsr-annotation, .prcsr-price {
     color: white;
     float: left;
-    margin: 40px 40px 40px 100px;
+    margin: 40px 50% 40px 100px;
+    text-align: start;
+}
+.prcsr-back {
+    background: gainsboro;
+    -webkit-border-radius: 13px 13px 20px 20px;
+    -moz-border-radius: 10px 10px 20px 20px;
 }

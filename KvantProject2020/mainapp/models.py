@@ -1,17 +1,25 @@
 from django.db import models
 
 
+class Manufacturer(models.Model):
+    id = models.BigAutoField(primary_key=True)
+    title = models.CharField(max_length=100)
+
+    def __str__(self):
+        return f'{self.id} {self.title}'
+
+
 class ProcessorManager(models.Manager):
-    def create_unit(self, title, link, price):
-        processor = self.create( title=title, link=link, price=price)
+    def create_unit(self, title, link, price, image):
+        processor = self.create(title=title, link=link, price=price, image=image)
         return processor
+
 
 class GPUManager(models.Manager):
     def create_unit(self, GPU_Name):
         gpu = self.create(GPU_Name=GPU_Name)
         return gpu
 
-MANUFACTURER_LIST = [('Amd', 'AMD'),('Intel', 'Intel')]
 
 class Processor(models.Model):
     id = models.BigAutoField(primary_key=True)
@@ -25,9 +33,6 @@ class Processor(models.Model):
     cache = models.CharField(max_length=20)
     frequency = models.CharField(max_length=50)
     TDP = models.CharField(max_length=50)
-    image = models.ImageField(upload_to='static/images  ', blank=True)
-    manufac = models.CharField(max_length=100, choices=MANUFACTURER_LIST, default='Intel')
-
 
     objects = ProcessorManager()
 

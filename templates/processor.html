@@ -1,7 +1,9 @@
 {% extends "index.html" %}
 
     {% block content %}
-        <h2 class="prcsr-title">{{ processor.title }}</h2>
+        <h2 class="prcsr-title" style="font-size: 50px">{{ processor.title }}</h2><br>
+        <h4 class="prcsr-annotation"><span style="font-size: 35px">Краткое описание:</span><br>{{ properties }}</h4><br>
+        <h3 class="prcsr-price">{{ processor.price }} руб.</h3>
     {% endblock %}
 
 </body>

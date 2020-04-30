@@ -22,6 +22,6 @@ urlpatterns = [
     path('', views.index, name='main'),
     path('configurate/', views.processor_list, name='processors'),
     path('results/', views.results, name='results'),
-    re_path(r'^news/(?P<processor_id>\d+)$', views.processor, name="processor"),
+    re_path(r'^processor/(?P<processor_id>\d+)$', views.processor, name="processor"),
 
 ]
