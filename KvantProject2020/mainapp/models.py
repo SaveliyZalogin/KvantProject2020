@@ -9,16 +9,10 @@ class Manufacturer(models.Model):
         return f'{self.id} {self.title}'
 
 
-class ProcessorManager(models.Manager):
+class Manager(models.Manager):
     def create_unit(self, title, link, price, image):
         processor = self.create(title=title, link=link, price=price, image=image)
         return processor
-
-
-class GPUManager(models.Manager):
-    def create_unit(self, GPU_Name):
-        gpu = self.create(GPU_Name=GPU_Name)
-        return gpu
 
 
 class Processor(models.Model):
@@ -34,7 +28,7 @@ class Processor(models.Model):
     frequency = models.CharField(max_length=50)
     TDP = models.CharField(max_length=50)
 
-    objects = ProcessorManager()
+    objects = Manager()
 
     def __str__(self):
         return f'{self.id} {self.title}'
@@ -42,15 +36,17 @@ class Processor(models.Model):
 
 class GPU(models.Model):
     id = models.BigAutoField(primary_key=True)
-    GPU_Name = models.CharField(max_length=150)
-    GPU_Price = models.IntegerField
-    GPU_Annotation = models.CharField(max_length=1000)
+    title = models.CharField(max_length=150)
+    link = models.CharField(max_length=200, default='link')
+    price = models.CharField(max_length=50, default='price')
+    image = models.CharField(max_length=200, default='image')
+    annotation = models.CharField(max_length=1000)
     videoMemory = models.CharField(max_length=150)
     typeOfVideoMemory = models.CharField(max_length=150)
     addPower = models.BooleanField(default=False)
 
-    gpuObjects = GPUManager()
+    objects = Manager()
 
     def __str__(self):
-        return f'{self.id} {self.GPU_Name}'
+        return f'{self.id} {self.title}'
 

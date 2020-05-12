@@ -1,5 +1,6 @@
 from django import forms
 
+
 class Filters(forms.Form):
      CHOICES = [('AMD', 'AMD'),
                 ('Intel', 'Intel')]

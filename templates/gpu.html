@@ -1,0 +1,13 @@
+{% extends "index.html" %}
+
+    {% block content %}
+        <div class="element-image">
+            <img width="250px" style="float: left; margin: 40px 50% 0 100px" src="{{ videokarta.image }}"><br>
+        </div>
+        <h2 class="prcsr-title" style="font-size: 50px">{{ videokarta.title }}</h2><br>
+        <h4 class="prcsr-annotation">{{ properties }}</h4><br>
+        <h3 class="prcsr-price">{{ videokarta.price }} руб.</h3>
+    {% endblock %}
+
+</body>
+</html>

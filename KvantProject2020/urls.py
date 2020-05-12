@@ -20,8 +20,9 @@ from .mainapp import views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.index, name='main'),
-    path('configurate/', views.processor_list, name='processors'),
+    path('processors/', views.processor_list, name='processors'),
+    path('gpus/', views.gpu_list, name='gpus'),
     path('results/', views.results, name='results'),
     re_path(r'^processor/(?P<processor_id>\d+)$', views.processor, name="processor"),
-
+    re_path(r'^videokarta/(?P<gpu_id>\d+)$', views.gpu, name="gpu"),
 ]
