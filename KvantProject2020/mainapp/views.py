@@ -25,24 +25,22 @@ def parce_processor_properties(processor):
 
 def parse():
     old_price = []
-    r = requests.get('https://www.citilink.ru/catalog/computers_and_notebooks/parts/cpu/')
+    r = requests.get('https://www.citilink.ru/catalog/computers_and_notebooks/parts/videocards/')
     soup = BeautifulSoup(r.content, 'lxml')
     name = soup.find_all('a', class_="link_gtm-js link_pageevents-js ddl_product_link")
-    price = soup.find_all('ins', class_="subcategory-product-item__price-num")
+    #price = soup.find_all('ins', class_="subcategory-product-item__price-num")
+
     link = soup.find_all('a', class_="link_gtm-js link_pageevents-js ddl_product_link")
-    image = soup.find_all('img', class_="product-card__img lazyload")
-    print(image)
     print(len(name))
     for i in range(0, len(name)):
         title = name[i].get_text()
-        finalPrice = price[i].get_text()
+        #finalPrice = price[i].get_text()
         finalLink = link[i].get('href')
-        finalImage = image[i].get('data-src')
-        print(finalImage)
+        #finalImage = image[i].get('src')
         try:
-            models.Processor.objects.get(title=title, link=finalLink, price=finalPrice, image=finalImage)
+            models.GPU.gpuObjects.get(GPU_Name=title, GPULink=finalLink)
         except:
-            models.Processor.objects.create_unit(title=title, link=finalLink, price=finalPrice, image=finalImage)
+            models.GPU.gpuObjects.create_unit(GPU_Name=title, GPULink=finalLink)
 # def parse():
 #     title = ''
 #     link = ''
@@ -66,7 +64,7 @@ def parse():
 #             models.Processor.objects.get(title=title, link=link)
 #         except:
 #             models.Processor.objects.create_unit(title=title, link=link)
-            models.Processor.objects.create_unit(title=title, link=finalLink, price=finalPrice)
+            #models.Processor.objects.create_unit(title=title, link=finalLink, price=finalPrice)
 
 
 def index(request):
@@ -75,6 +73,13 @@ def index(request):
     }
     return render(request, "index.html", context)
 
+def gpu_list(request):
+    all_gpus = models.GPU.gpuObjects.all()
+    parse()
+    context = {
+        'videocards':all_gpus,
+    }
+    return render(request, 'gpuList.html', context)
 
 def processor_list(request):
     all_processors = models.Processor.objects.all()
@@ -93,6 +98,14 @@ def results(request):
 
     }
     return render(request, "results.html", context)
+
+
+def videocardPage(request, gpu_id):
+    videocard = models.GPU.gpuObjects.get(id=gpu_id)
+    context = {
+        'videocard':videocard
+    }
+    return render(request, "Videocard.html", context)
 
 
 def processor(request, processor_id):

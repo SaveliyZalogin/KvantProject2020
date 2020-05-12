@@ -1,13 +1,16 @@
 <!DOCTYPE html>
-
+{% extends 'index.html' %}
 {% load static %}
 
 {% block content %}
-    {% for gpu in GPU %}
+    {% for gpu in videocards %}
         <div class="processor">
-            <h3>{{ gpu.GPU_Name }}</h3>
+            <a role="button" style="color: black; text-decoration: none; width: 20%" href="{% url 'gpu' gpu.id %}">
+                <img src="../{{ gpu.GPUImage }}">
+                <h3>{{ gpu.GPU_Name }}</h3>
+                <h3>{{ gpu.GPU_Price }} руб.</h3>
+            </a>
         </div>
-
-        {% endfor %}
+    {% endfor %}
 
 {% endblock %}

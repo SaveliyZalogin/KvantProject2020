@@ -16,8 +16,8 @@ class ProcessorManager(models.Manager):
 
 
 class GPUManager(models.Manager):
-    def create_unit(self, GPU_Name):
-        gpu = self.create(GPU_Name=GPU_Name)
+    def create_unit(self, GPU_Name, GPULink):
+        gpu = self.create(GPU_Name=GPU_Name, GPULink=GPULink)
         return gpu
 
 
@@ -43,12 +43,13 @@ class Processor(models.Model):
 class GPU(models.Model):
     id = models.BigAutoField(primary_key=True)
     GPU_Name = models.CharField(max_length=150)
-    GPU_Price = models.IntegerField
+    GPU_Price = models.IntegerField(default=0)
+    GPUImage = models.ImageField(upload_to='static/images', default='ne zavezli')
     GPU_Annotation = models.CharField(max_length=1000)
     videoMemory = models.CharField(max_length=150)
     typeOfVideoMemory = models.CharField(max_length=150)
     addPower = models.BooleanField(default=False)
-
+    GPULink = models.CharField(max_length=150, default='ne zavezli')
     gpuObjects = GPUManager()
 
     def __str__(self):

@@ -1,11 +1,6 @@
 {% extends "index.html" %}
 
     {% block content %}
-        <form name="Бюджет" method="get" action="/form.py/">
-            <input type="number">
-            <input type="submit" value="OK">
-
-        </form>
         {% for processor in processors %}
             <div class="processor">
                 <a role="button" style="color: black; text-decoration: none; width: 20%" href="{% url 'processor' processor.id %}">

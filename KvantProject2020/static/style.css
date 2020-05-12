@@ -41,18 +41,34 @@
     -moz-border-radius: 13px 13px 20px 20px;
     float: left;
 }
+
+
+
 .card-text {
     color: black;
 }
 .card-title {
     color: black;
 }
-.prcsr-title, .prcsr-annotation, .prcsr-price {
+.product-title  {
     color: white;
-    float: left;
-    margin: 40px 50% 40px 100px;
-    text-align: start;
+    text-align: right;
+    margin: 20vh 6vw 0 0;
+
 }
+
+.product-annotation{
+    color: white;
+    text-align: right;
+    margin: 5vh 20vw 0 0;
+}
+
+.product-price{
+    color: white;
+    text-align: right;
+    
+}
+
 .prcsr-back {
     background: gainsboro;
     -webkit-border-radius: 13px 13px 20px 20px;
