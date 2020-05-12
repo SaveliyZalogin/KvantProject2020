@@ -4,7 +4,7 @@
         {% for processor in processors %}
             <div class="processor">
                 <a role="button" style="color: black; text-decoration: none; width: 20%" href="{% url 'processor' processor.id %}">
-                    <img src="../{{ processor.image }}">
+                    <img src="{{ processor.image }}">
                     <h3>{{ processor.title }}</h3>
                     <h3>{{ processor.price }} руб.</h3>
                 </a>

@@ -24,5 +24,5 @@ urlpatterns = [
     path('gpus/', views.gpu_list, name='gpus'),
     path('results/', views.results, name='results'),
     re_path(r'^processor/(?P<processor_id>\d+)$', views.processor, name="processor"),
-    re_path(r'^gpu/(?P<gpu_id>\d+)$', views.videocardPage, name='gpu')
+    re_path(r'^videokarta/(?P<gpu_id>\d+)$', views.gpu, name="gpu"),
 ]

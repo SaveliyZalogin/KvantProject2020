@@ -1,11 +1,20 @@
 {% extends "processorList.html" %}
 
     {% block content %}
-        {% for processor in processsors %}
-            <div class="processor">
-                <h3>{{ processor.title }}</h3>
-            </div>
-        {% endfor %}
+        {% if processsors %}
+            {% for processor in processsors %}
+                <div class="processor">
+                    <h3>{{ processor.title }}</h3>
+                </div>
+            {% endfor %}
+        {% endif %}
+        {% if gpus %}
+            {% for gpu in gpus %}
+                <div class="processor">
+                    <h3>{{ gpu.title }}</h3>
+                </div>
+            {% endfor %}
+        {% endif %}
     {% endblock %}
 </body>
 </html>

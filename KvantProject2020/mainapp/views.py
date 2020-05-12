@@ -5,42 +5,58 @@ from . import models
 import time
 from bs4 import BeautifulSoup
 import requests
+from django.http import HttpResponseRedirect
 
 
-def parce_processor_properties(processor):
+def parce_processor_properties(element):
     result = ''
     processors = models.Processor.objects.all()
+    gpus = models.GPU.objects.all()
     html = ''
     link_list = []
     for link in processors:
         link_list.append(link.link)
+    for link in gpus:
+        link_list.append(link.link)
     for i in link_list:
-        if i == processor.link:
+        if i == element.link:
             r = requests.get(str(i))
             soup = BeautifulSoup(r.content, 'lxml')
             annotation = soup.find('p', class_="short_description")
             result = annotation.get_text()
+            print(result)
     return result
 
 
-def parse():
-    old_price = []
-    r = requests.get('https://www.citilink.ru/catalog/computers_and_notebooks/parts/videocards/')
-    soup = BeautifulSoup(r.content, 'lxml')
-    name = soup.find_all('a', class_="link_gtm-js link_pageevents-js ddl_product_link")
-    #price = soup.find_all('ins', class_="subcategory-product-item__price-num")
-
-    link = soup.find_all('a', class_="link_gtm-js link_pageevents-js ddl_product_link")
-    print(len(name))
-    for i in range(0, len(name)):
-        title = name[i].get_text()
-        #finalPrice = price[i].get_text()
-        finalLink = link[i].get('href')
-        #finalImage = image[i].get('src')
-        try:
-            models.GPU.gpuObjects.get(GPU_Name=title, GPULink=finalLink)
-        except:
-            models.GPU.gpuObjects.create_unit(GPU_Name=title, GPULink=finalLink)
+def parse(product_list_link):
+    processors = models.Processor.objects.all()
+    gpus = models.GPU.objects.all()
+    if len(processors) == 0 or len(gpus) == 0:
+        r = requests.get(product_list_link)
+        soup = BeautifulSoup(r.content, 'lxml')
+        name = soup.find_all('a', class_="link_gtm-js link_pageevents-js ddl_product_link")
+        price = soup.find_all('div', class_="actions subcategory-product-item__action-container")
+        link = soup.find_all('a', class_="link_gtm-js link_pageevents-js ddl_product_link")
+        image = soup.find_all('img', class_="product-card__img lazyload")
+        for i in range(-2, len(name)):
+            title = name[i].get_text()
+            finalall = price[i].get('data-params')
+            finalLink = link[i].get('href')
+            finalImage = image[i].get('data-src')
+            fnPrice = re.findall(r'"price":(\d*),', finalall)
+            fnTitle = re.findall(r'"shortName":"(.*)","categoryName"', finalall)
+            category = re.findall(r'"categoryName":"(\w*)","brandName"', finalall)
+            print(finalall)
+            if category[0] == 'Процессоры':
+                try:
+                    models.Processor.objects.get(title=fnTitle[0], link=finalLink, price=fnPrice[0], image=finalImage)
+                except:
+                    models.Processor.objects.create_unit(title=fnTitle[0], link=finalLink, price=fnPrice[0], image=finalImage)
+            else:
+                try:
+                    models.GPU.objects.get(title=fnTitle[0], link=finalLink, price=fnPrice[0], image=finalImage)
+                except:
+                    models.GPU.objects.create_unit(title=fnTitle[0], link=finalLink, price=fnPrice[0], image=finalImage)
 # def parse():
 #     title = ''
 #     link = ''
@@ -64,7 +80,7 @@ def parse():
 #             models.Processor.objects.get(title=title, link=link)
 #         except:
 #             models.Processor.objects.create_unit(title=title, link=link)
-            #models.Processor.objects.create_unit(title=title, link=finalLink, price=finalPrice)
+#             models.Processor.objects.create_unit(title=title, link=finalLink, price=finalPrice)
 
 
 def index(request):
@@ -73,39 +89,39 @@ def index(request):
     }
     return render(request, "index.html", context)
 
-def gpu_list(request):
-    all_gpus = models.GPU.gpuObjects.all()
-    parse()
-    context = {
-        'videocards':all_gpus,
-    }
-    return render(request, 'gpuList.html', context)
 
 def processor_list(request):
     all_processors = models.Processor.objects.all()
-    parse()
+    parse('https://bit.ly/2VQnLik')
     context = {
         'processors': all_processors,
     }
     return render(request, "processorList.html", context)
 
 
+def gpu_list(request):
+    all_gpus = models.GPU.objects.all()
+    parse('https://bit.ly/2WaZ1QO')
+    context = {
+        'gpus': all_gpus,
+
+    }
+    return render(request, "gpuList.html", context)
+
+
 def results(request):
     search = request.GET.get('search', '')
     processors = models.Processor.objects.filter(title__icontains=search)
+    gpus = models.GPU.objects.filter(title__icontains=search)
+    if search.upper() == 'ПРОЦЕССОРЫ':
+        return HttpResponseRedirect("/processors/")
+    elif search.upper() == 'ВИДЕОКАРТЫ':
+        return HttpResponseRedirect("/gpus/")
     context = {
         'processsors': processors,
-
+        'gpus': gpus,
     }
     return render(request, "results.html", context)
-
-
-def videocardPage(request, gpu_id):
-    videocard = models.GPU.gpuObjects.get(id=gpu_id)
-    context = {
-        'videocard':videocard
-    }
-    return render(request, "Videocard.html", context)
 
 
 def processor(request, processor_id):
@@ -116,3 +132,13 @@ def processor(request, processor_id):
         'properties': properties,
     }
     return render(request, "processor.html", context)
+
+
+def gpu(request, gpu_id):
+    gpu = models.GPU.objects.get(id=gpu_id)
+    properties = parce_processor_properties(gpu)
+    context = {
+        'videokarta': gpu,
+        'properties': properties,
+    }
+    return render(request, "gpu.html", context)
