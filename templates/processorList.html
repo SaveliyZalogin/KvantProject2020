@@ -1,5 +1,5 @@
 {% extends "index.html" %}
-
+{% load static %}
     {% block content %}
         {% for processor in processors %}
             <div class="processor">
@@ -10,5 +10,11 @@
                 </a>
             </div>
         {% endfor %}
-
+        <p class="footer-block">
+        <form action="">
+            <div class="footer-button right-margin"><button id="q1">1</button></div>
+            <div class="footer-button"><button id="q2">2</button></div>
+            <div class="footer-button"><button id="q3">3</button></div>
+        </form>
+        </p>
     {% endblock %}
