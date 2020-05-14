@@ -1,14 +1,22 @@
 {% extends "index.html" %}
-
+{% load static %}
     {% block content %}
         {% for processor in processors %}
             <div class="processor">
                 <a role="button" style="color: black; text-decoration: none; width: 20%" href="{% url 'processor' processor.id %}">
-                    <img src="{{ processor.image }}">
-                    <h3>{{ processor.title }}</h3>
-                    <h3>{{ processor.price }} руб.</h3>
+                    <ul>
+                        <li><img src="{{ processor.image }}"></li>
+                        <li style="margin-left:15px "><h3>{{ processor.title }}</h3></li>
+                        <li style="margin: 3% 0 3% 20%"><h3>{{ processor.price }} руб.</h3>
+                        <li style="margin: 3% 0 3% 10px"><button class="btn btn-outline-warning btn-lg text-dark">Купить</button></li>
+                    </ul>
                 </a>
             </div>
         {% endfor %}
-
+        <p class="footer-block">
+        <form action="">
+            <div class="footer-button right-margin"><button id="q1">1</button></div>
+            <div class="footer-button"><button id="q2">2</button></div>
+            <div class="footer-button"><button id="q3">3</button></div>
+        </form>
     {% endblock %}

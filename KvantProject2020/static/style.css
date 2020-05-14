@@ -1,3 +1,12 @@
+ul{
+    list-style-type: none;
+    display: flex;
+}
+
+li{
+    margin-left: 10px;
+}
+
 .background {
     width: 100vw;
     background-color: darkslateblue;
@@ -33,13 +42,14 @@
     color: gainsboro;
 }
 .processor {
-    background: gainsboro;
-    width: 20%;
-    height: 15%;
-    margin: 20px 20px 20px 10%;
-    padding: 10px 10px 10px 10px;
+    background: whitesmoke;
+    width: 60%;
+    height: 140px;
+    margin: 20px 0 10px 30px;
+    padding-top:10px ;
     -webkit-border-radius: 13px 13px 20px 20px;
     -moz-border-radius: 13px 13px 20px 20px;
+
 }
 .card-text {
     color: black;
@@ -62,4 +72,19 @@
 .element-image {
     display: block;
     max-width: 100%;
+}
+.footer-button {
+    text-align: center;
+    color: black;
+    background: gainsboro;
+    height: 30px;
+    width: 50px;
+    float: left;
+    margin-left: 5px;
+}
+.footer-block {
+    display: inline-block;
+}
+.right-margin {
+    margin-left: 46%;
 }

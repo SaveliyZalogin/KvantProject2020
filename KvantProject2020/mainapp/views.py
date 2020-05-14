@@ -20,11 +20,14 @@ def parce_processor_properties(element):
         link_list.append(link.link)
     for i in link_list:
         if i == element.link:
-            r = requests.get(str(i))
-            soup = BeautifulSoup(r.content, 'lxml')
-            annotation = soup.find('p', class_="short_description")
-            result = annotation.get_text()
-            print(result)
+            if len(element.annotation) == 0:
+                r = requests.get(str(i))
+                soup = BeautifulSoup(r.content, 'lxml')
+                annotation = soup.find('p', class_="short_description")
+                result = annotation.get_text()
+                element.annotation = result
+                element.save()
+                print(result)
     return result
 
 
@@ -37,16 +40,18 @@ def parse(product_list_link):
         name = soup.find_all('a', class_="link_gtm-js link_pageevents-js ddl_product_link")
         price = soup.find_all('div', class_="actions subcategory-product-item__action-container")
         link = soup.find_all('a', class_="link_gtm-js link_pageevents-js ddl_product_link")
-        image = soup.find_all('img', class_="product-card__img lazyload")
-        for i in range(-2, len(name)):
+        image = soup.find_all('img', class_="lazyload")
+        for i in range(3, len(name)):
             title = name[i].get_text()
             finalall = price[i].get('data-params')
             finalLink = link[i].get('href')
-            finalImage = image[i].get('data-src')
+            finalImage = image[i - 3].get('data-src')
             fnPrice = re.findall(r'"price":(\d*),', finalall)
             fnTitle = re.findall(r'"shortName":"(.*)","categoryName"', finalall)
             category = re.findall(r'"categoryName":"(\w*)","brandName"', finalall)
             print(finalall)
+            print(finalImage)
+            print(i)
             if category[0] == 'Процессоры':
                 try:
                     models.Processor.objects.get(title=fnTitle[0], link=finalLink, price=fnPrice[0], image=finalImage)
