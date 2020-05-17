@@ -1,12 +1,20 @@
 {% extends "index.html" %}
 {% load static %}
     {% block content %}
+        <div style="margin: 30px 50px 10px 50px">
+            <form class="form-inline my-2 my-lg-0" action="{% url 'results' %}">
+              <input class="form-control mr-sm-2" name="price" type="search" placeholder="Цена" aria-label="Цена">
+              <input class="form-control mr-sm-2" name="manufacturer" type="search" placeholder="Производитель" aria-label="Производитель">
+              <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+            </form>
+        </div>
+
         {% for processor in processors %}
             <div class="processor">
                 <a role="button" style="color: black; text-decoration: none; width: 20%" href="{% url 'processor' processor.id %}">
                     <ul>
                         <li><img src="{{ processor.image }}"></li>
-                        <li style="margin-left:15px "><h3>{{ processor.title }}</h3></li>
+                        <li style="margin-left: 15px; width: 45% "><h3>{{ processor.title }}</h3></li>
                         <li style="margin: 3% 0 3% 20%"><h3>{{ processor.price }} руб.</h3>
                         <li style="margin: 3% 0 3% 10px"><button class="btn btn-outline-warning btn-lg text-dark">Купить</button></li>
                     </ul>
@@ -19,4 +27,5 @@
             <div class="footer-button"><button id="q2">2</button></div>
             <div class="footer-button"><button id="q3">3</button></div>
         </form>
+        </p>
     {% endblock %}

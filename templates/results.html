@@ -3,16 +3,30 @@
     {% block content %}
         {% if processsors %}
             {% for processor in processsors %}
-                <div class="processor">
-                    <h3>{{ processor.title }}</h3>
-                </div>
+            <div class="processor">
+                <a role="button" style="color: black; text-decoration: none; width: 20%" href="{% url 'processor' processor.id %}">
+                    <ul>
+                        <li><img src="{{ processor.image }}"></li>
+                        <li style="margin-left: 15px; width: 45% "><h3>{{ processor.title }}</h3></li>
+                        <li style="margin: 3% 0 3% 20%"><h3>{{ processor.price }} руб.</h3>
+                        <li style="margin: 3% 0 3% 10px"><button class="btn btn-outline-warning btn-lg text-dark">Купить</button></li>
+                    </ul>
+                </a>
+            </div>
             {% endfor %}
         {% endif %}
         {% if gpus %}
             {% for gpu in gpus %}
-                <div class="processor">
-                    <h3>{{ gpu.title }}</h3>
-                </div>
+            <div class="processor">
+                <a role="button" style="color: black; text-decoration: none; width: 20%" href="{% url 'gpu' gpu.id %}">
+                    <ul>
+                        <li><img src="{{ gpu.image }}"></li>
+                        <li style="margin-left: 15px; width: 60%"><h3>{{ gpu.title }}</h3></li>
+                        <li style="margin: 3% 0 3% 5%"><h3>{{ gpu.price }} руб.</h3>
+                        <li style="margin: 3% 0 3% 10px"><button class="btn btn-outline-warning btn-lg text-dark">Купить</button></li>
+                    </ul>
+                </a>
+            </div>
             {% endfor %}
         {% endif %}
     {% endblock %}

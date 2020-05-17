@@ -16,10 +16,10 @@
                   <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul class="navbar-nav mr-auto">
                       <li class="nav-item active">
-                        <a class="nav-link" href="{% url "processors" %}">Собрать ПК<span class="sr-only">(current)</span></a>
+                        <a class="nav-link" href="{% url "processors" %}">Процессоры<span class="sr-only">(current)</span></a>
                       </li>
                       <li class="nav-item active">
-                        <a class="nav-link" href="#">Подобрать готовый</a>
+                        <a class="nav-link" href="#">Видеокарты</a>
                       </li>
                       <li class="nav-item dropdown active">
                         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -43,6 +43,36 @@
         {% endblock %}
 
         {% block content %}
+            <div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel">
+
+              <ol class="carousel-indicators">
+                <li data-target="#carouselExampleIndicators" data-slide-to="0" class="active"></li>
+                <li data-target="#carouselExampleIndicators" data-slide-to="1"></li>
+                <li data-target="#carouselExampleIndicators" data-slide-to="2"></li>
+              </ol>
+              <div class="carousel-inner">
+                <div class="carousel-item active">
+                    <a href="{% url 'processor' prc.id %}"><img class="element-image left-margin" height="200px" src="{{ prc.image }}" alt="..."></a>
+                    <p style="color: white">{{ prc.title }}</p><br>
+                </div>
+                <div class="carousel-item">
+                    <a href="{% url 'gpu' gpu.id %}"><img class="element-image left-margin" height="200px" src="{{ gpu.image }}" alt="..."></a>
+                    <p style="color: white">{{ gpu.title }}</p><br>
+                </div>
+                <div class="carousel-item">
+                    <a href="{% url 'motherboard' mth.id %}"><img class="element-image left-margin" height="200px" src="{{ mth.image }}" alt="..."></a>
+                    <p style="color: white">{{ mth.title }}</p><br>
+                </div>
+              </div>
+              <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="sr-only">Previous</span>
+              </a>
+              <a class="carousel-control-next" href="#carouselExampleIndicators" role="button" data-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="sr-only">Next</span>
+              </a>
+            </div>
             <a role="button" href="{% url 'processors' %}">
             <div class="main-link-title card">
                 <img height="400px" src="https://st.overclockers.ru/c/350/300//images/preview/8XBnVDleGvIFIVG8.jpg" class="card-img-top">
@@ -61,7 +91,7 @@
                 </div>
             </div>
             </a>
-            <a role="button" href="#">
+            <a role="button" href="{% url 'motherboards' %}">
             <div class="main-link-title card">
                 <img height="400px" src="https://peredpokupkoy.ru/img/kompiutery/komplektuiushchie/materinskie-platy/materinskie-platy-asus/otzyvy-asus-z170m-e-d3-12793087.jpg" alt="Представьте себе вместо этого текста гору мышек и клавиатур" class="card-img-top">
                 <div class="card-body">

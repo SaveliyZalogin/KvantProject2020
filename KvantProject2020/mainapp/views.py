@@ -6,6 +6,7 @@ import time
 from bs4 import BeautifulSoup
 import requests
 from django.http import HttpResponseRedirect
+import random
 
 
 def parce_processor_properties(element):
@@ -89,8 +90,16 @@ def parse(product_list_link):
 
 
 def index(request):
+    processors = models.Processor.objects.all()
+    gpus = models.GPU.objects.all()
+    motherboards = models.Motherboard.objects.all()
+    resultprc = random.choice(processors)
+    resultgpu = random.choice(gpus)
+    resultmth = random.choice(motherboards)
     context = {
-
+        'prc': resultprc,
+        'gpu': resultgpu,
+        'mth': resultmth,
     }
     return render(request, "index.html", context)
 
@@ -115,9 +124,17 @@ def gpu_list(request):
 
 
 def results(request):
+    processors = None
+    gpus = None
     search = request.GET.get('search', '')
-    processors = models.Processor.objects.filter(title__icontains=search)
-    gpus = models.GPU.objects.filter(title__icontains=search)
+    price = request.GET.get('price', '')
+    manufacturer = request.GET.get('manufacturer', '')
+    if len(search) > 0:
+        processors = models.Processor.objects.filter(title__icontains=search)
+        gpus = models.GPU.objects.filter(title__icontains=search)
+    if len(price) > 0:
+        for i in range(0, int(price) + 1):
+            processors = models.Processor.objects.filter(price=i)
     if search.upper() == 'ПРОЦЕССОРЫ':
         return HttpResponseRedirect("/processors/")
     elif search.upper() == 'ВИДЕОКАРТЫ':

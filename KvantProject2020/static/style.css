@@ -30,7 +30,7 @@ li{
     margin-top: 20px;
 }
 .card-body {
-    background: gainsboro;
+    background: whitesmoke;
 }
 .card-img-top {
     border-bottom: 1px solid lightgray;
@@ -43,13 +43,12 @@ li{
 }
 .processor {
     background: whitesmoke;
-    width: 60%;
+    width: 70%;
     height: 140px;
     margin: 20px 0 10px 30px;
     padding-top:10px ;
     -webkit-border-radius: 13px 13px 20px 20px;
     -moz-border-radius: 13px 13px 20px 20px;
-
 }
 .card-text {
     color: black;
@@ -87,4 +86,10 @@ li{
 }
 .right-margin {
     margin-left: 46%;
+}
+.carousel {
+    margin: 50px 50px 50px 50px;
+}
+.left-margin {
+    margin-left: 45%;
 }

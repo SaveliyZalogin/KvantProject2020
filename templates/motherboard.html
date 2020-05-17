@@ -1,0 +1,11 @@
+{% extends "processor.html" %}
+        {% block content %}
+        <div class="element-image">
+            <img width="200px" style="float: left; margin: 40px 50% 0 100px" src="{{ mthboard.image }}"><br>
+        </div>
+        <h2 class="prcsr-title" style="font-size: 50px">{{ mthboard.title }}</h2><br>
+        <h4 class="prcsr-annotation">{{ mthboard.annotation }}</h4><br>
+        <h3 class="prcsr-price">{{ mthboard.price }} руб.</h3>
+    {% endblock %}
+</body>
+</html>
