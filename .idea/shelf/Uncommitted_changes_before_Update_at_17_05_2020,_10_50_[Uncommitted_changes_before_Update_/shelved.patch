@@ -1,0 +1,147 @@
+Index: KvantProject2020/urls.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>\"\"\"KvantProject2020 URL Configuration\n\nThe `urlpatterns` list routes URLs to views. For more information please see:\n    https://docs.djangoproject.com/en/3.0/topics/http/urls/\nExamples:\nFunction views\n    1. Add an import:  from my_app import views\n    2. Add a URL to urlpatterns:  path('', views.home, name='home')\nClass-based views\n    1. Add an import:  from other_app.views import Home\n    2. Add a URL to urlpatterns:  path('', Home.as_view(), name='home')\nIncluding another URLconf\n    1. Import the include() function: from django.urls import include, path\n    2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))\n\"\"\"\nfrom django.contrib import admin\nfrom django.urls import path, re_path\nfrom .mainapp import views\n\nurlpatterns = [\n    path('admin/', admin.site.urls),\n    path('', views.index, name='main'),\n    path('processors/', views.processor_list, name='processors'),\n    path('gpus/', views.gpu_list, name='gpus'),\n    path('results/', views.results, name='results'),\n    re_path(r'^processor/(?P<processor_id>\\d+)$', views.processor, name=\"processor\"),\n    re_path(r'^videokarta/(?P<gpu_id>\\d+)$', views.gpu, name=\"gpu\"),\n]\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- KvantProject2020/urls.py	(revision b07ac3e18e91fb93abcf328e697e2028476b7966)
++++ KvantProject2020/urls.py	(date 1589514259954)
+@@ -22,7 +22,9 @@
+     path('', views.index, name='main'),
+     path('processors/', views.processor_list, name='processors'),
+     path('gpus/', views.gpu_list, name='gpus'),
++    path('motherboards/', views.motherboards, name="motherboards"),
+     path('results/', views.results, name='results'),
+     re_path(r'^processor/(?P<processor_id>\d+)$', views.processor, name="processor"),
+     re_path(r'^videokarta/(?P<gpu_id>\d+)$', views.gpu, name="gpu"),
++    re_path(r'^motherboard/(?P<motherboard_id>\d+)$', views.motherboard, name="motherboard"),
+ ]
+Index: KvantProject2020/mainapp/views.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>from django.shortcuts import render\nfrom urllib.request import urlopen\nimport re\nfrom . import models\nimport time\nfrom bs4 import BeautifulSoup\nimport requests\nfrom django.http import HttpResponseRedirect\nimport random\n\n\ndef parce_processor_properties(element):\n    result = ''\n    processors = models.Processor.objects.all()\n    gpus = models.GPU.objects.all()\n    html = ''\n    link_list = []\n    for link in processors:\n        link_list.append(link.link)\n    for link in gpus:\n        link_list.append(link.link)\n    for i in link_list:\n        if i == element.link:\n            if len(element.annotation) == 0:\n                r = requests.get(str(i))\n                soup = BeautifulSoup(r.content, 'lxml')\n                annotation = soup.find('p', class_=\"short_description\")\n                result = annotation.get_text()\n                element.annotation = result\n                element.save()\n                print(result)\n    return result\n\n\ndef parse(product_list_link):\n    processors = models.Processor.objects.all()\n    gpus = models.GPU.objects.all()\n    if len(processors) == 0 or len(gpus) == 0:\n        r = requests.get(product_list_link)\n        soup = BeautifulSoup(r.content, 'lxml')\n        name = soup.find_all('a', class_=\"link_gtm-js link_pageevents-js ddl_product_link\")\n        price = soup.find_all('div', class_=\"actions subcategory-product-item__action-container\")\n        link = soup.find_all('a', class_=\"link_gtm-js link_pageevents-js ddl_product_link\")\n        image = soup.find_all('img', class_=\"lazyload\")\n        for i in range(3, len(name)):\n            title = name[i].get_text()\n            finalall = price[i].get('data-params')\n            finalLink = link[i].get('href')\n            finalImage = image[i - 3].get('data-src')\n            fnPrice = re.findall(r'\"price\":(\\d*),', finalall)\n            fnTitle = re.findall(r'\"shortName\":\"(.*)\",\"categoryName\"', finalall)\n            category = re.findall(r'\"categoryName\":\"(\\w*)\",\"brandName\"', finalall)\n            print(finalall)\n            print(finalImage)\n            print(i)\n            if category[0] == 'Процессоры':\n                try:\n                    models.Processor.objects.get(title=fnTitle[0], link=finalLink, price=fnPrice[0], image=finalImage)\n                except:\n                    models.Processor.objects.create_unit(title=fnTitle[0], link=finalLink, price=fnPrice[0], image=finalImage)\n            else:\n                try:\n                    models.GPU.objects.get(title=fnTitle[0], link=finalLink, price=fnPrice[0], image=finalImage)\n                except:\n                    models.GPU.objects.create_unit(title=fnTitle[0], link=finalLink, price=fnPrice[0], image=finalImage)\n# def parse():\n#     title = ''\n#     link = ''\n#     a = 0\n#     url = urlopen('https://www.citilink.ru/catalog/computers_and_notebooks/parts/cpu/')\n#     html = url.read().decode('UTF-8')\n#     regex_link = '<div class=\"wrap-img\"><a href=\"(.*)\"'\n#     link_list = re.findall(regex_link, html)\n#     regex_title = '<span class=\"image_container\"></span>(.*)&nbsp;(.*)\\s{16}</a>'\n#     # regex_annotation = '<p class=\"short_description\">(.*)&nbsp;&#151;\\s(.*)&nbsp;&#151;\\s(.*)&nbsp;&#151;\\s(.*)</p>'\n#     title_list = re.findall(regex_title, html)\n#     print(len(title_list))\n#     print(len(link_list))\n#     link_list.remove('https://www.citilink.ru/catalog/computers_and_notebooks/parts/cpu/1067853/')\n#     for c in range(0, len(title_list)):\n#         b = title_list[c]\n#         title = b[0] + ' ' + b[1]\n#         m = link_list[c]\n#         link = m\n#         try:\n#             models.Processor.objects.get(title=title, link=link)\n#         except:\n#             models.Processor.objects.create_unit(title=title, link=link)\n#             models.Processor.objects.create_unit(title=title, link=finalLink, price=finalPrice)\n\n\ndef index(request):\n    processors = models.Processor.objects.all()\n    gpus = models.GPU.objects.all()\n    motherboards = models.Motherboard.objects.all()\n    resultprc = random.choice(processors)\n    resultgpu = random.choice(gpus)\n    resultmth = random.choice(motherboards)\n    context = {\n        'prc': resultprc,\n        'gpu': resultgpu,\n        'mth': resultmth,\n    }\n    return render(request, \"index.html\", context)\n\n\ndef processor_list(request):\n    all_processors = models.Processor.objects.all()\n    parse('https://bit.ly/2VQnLik')\n    context = {\n        'processors': all_processors,\n    }\n    return render(request, \"processorList.html\", context)\n\n\ndef gpu_list(request):\n    all_gpus = models.GPU.objects.all()\n    parse('https://bit.ly/2WaZ1QO')\n    context = {\n        'gpus': all_gpus,\n\n    }\n    return render(request, \"gpuList.html\", context)\n\n\ndef results(request):\n    processors = None\n    gpus = None\n    search = request.GET.get('search', '')\n    price = request.GET.get('price', '')\n    manufacturer = request.GET.get('manufacturer', '')\n    if len(search) > 0:\n        processors = models.Processor.objects.filter(title__icontains=search)\n        gpus = models.GPU.objects.filter(title__icontains=search)\n    if len(price) > 0:\n        for i in range(0, int(price) + 1):\n            processors = models.Processor.objects.filter(price=i)\n    if search.upper() == 'ПРОЦЕССОРЫ':\n        return HttpResponseRedirect(\"/processors/\")\n    elif search.upper() == 'ВИДЕОКАРТЫ':\n        return HttpResponseRedirect(\"/gpus/\")\n    context = {\n        'processsors': processors,\n        'gpus': gpus,\n    }\n    return render(request, \"results.html\", context)\n\n\ndef processor(request, processor_id):\n    processor = models.Processor.objects.get(id=processor_id)\n    properties = parce_processor_properties(processor)\n    context = {\n        'processor': processor,\n        'properties': properties,\n    }\n    return render(request, \"processor.html\", context)\n\n\ndef gpu(request, gpu_id):\n    gpu = models.GPU.objects.get(id=gpu_id)\n    properties = parce_processor_properties(gpu)\n    context = {\n        'videokarta': gpu,\n        'properties': properties,\n    }\n    return render(request, \"gpu.html\", context)\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- KvantProject2020/mainapp/views.py	(revision b07ac3e18e91fb93abcf328e697e2028476b7966)
++++ KvantProject2020/mainapp/views.py	(date 1589529683165)
+@@ -13,12 +13,15 @@
+     result = ''
+     processors = models.Processor.objects.all()
+     gpus = models.GPU.objects.all()
++    motherboards = models.Motherboard.objects.all()
+     html = ''
+     link_list = []
+     for link in processors:
+         link_list.append(link.link)
+     for link in gpus:
+         link_list.append(link.link)
++    for link in motherboards:
++        link_list.append(link.link)
+     for i in link_list:
+         if i == element.link:
+             if len(element.annotation) == 0:
+@@ -35,7 +38,8 @@
+ def parse(product_list_link):
+     processors = models.Processor.objects.all()
+     gpus = models.GPU.objects.all()
+-    if len(processors) == 0 or len(gpus) == 0:
++    motherboards = models.Motherboard.objects.all()
++    if len(processors) == 0 or len(gpus) == 0 or len(motherboards) == 0:
+         r = requests.get(product_list_link)
+         soup = BeautifulSoup(r.content, 'lxml')
+         name = soup.find_all('a', class_="link_gtm-js link_pageevents-js ddl_product_link")
+@@ -52,17 +56,22 @@
+             category = re.findall(r'"categoryName":"(\w*)","brandName"', finalall)
+             print(finalall)
+             print(finalImage)
+-            print(i)
++            print(category)
+             if category[0] == 'Процессоры':
+                 try:
+                     models.Processor.objects.get(title=fnTitle[0], link=finalLink, price=fnPrice[0], image=finalImage)
+                 except:
+                     models.Processor.objects.create_unit(title=fnTitle[0], link=finalLink, price=fnPrice[0], image=finalImage)
+-            else:
++            elif category[0] == 'Видеокарты':
+                 try:
+                     models.GPU.objects.get(title=fnTitle[0], link=finalLink, price=fnPrice[0], image=finalImage)
+                 except:
+                     models.GPU.objects.create_unit(title=fnTitle[0], link=finalLink, price=fnPrice[0], image=finalImage)
++            else:
++                try:
++                    models.Motherboard.objects.get(title=fnTitle[0], link=finalLink, price=fnPrice[0], image=finalImage)
++                except:
++                    models.Motherboard.objects.create_unit(title=fnTitle[0], link=finalLink, price=fnPrice[0], image=finalImage)
+ # def parse():
+ #     title = ''
+ #     link = ''
+@@ -164,3 +173,23 @@
+         'properties': properties,
+     }
+     return render(request, "gpu.html", context)
++
++
++def motherboards(request):
++    motherboards = models.Motherboard.objects.all()
++    parse("https://bit.ly/2LrPujh")
++    context = {
++        'motherboards': motherboards,
++
++    }
++    return render(request, "motherboardList.html", context)
++
++
++def motherboard(request, motherboard_id):
++    mthboard = models.Motherboard.objects.get(id=motherboard_id)
++    properties = parce_processor_properties(mthboard)
++    context = {
++        'mthboard': mthboard,
++        'properties': properties,
++    }
++    return render(request, "motherboard.html", context)
+Index: KvantProject2020/mainapp/models.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>from django.db import models\n\n\nclass Manufacturer(models.Model):\n    id = models.BigAutoField(primary_key=True)\n    title = models.CharField(max_length=100)\n\n    def __str__(self):\n        return f'{self.id} {self.title}'\n\n\nclass Manager(models.Manager):\n    def create_unit(self, title, link, price, image):\n        processor = self.create(title=title, link=link, price=price, image=image)\n        return processor\n\n\nclass Processor(models.Model):\n    id = models.BigAutoField(primary_key=True)\n    title = models.CharField(max_length=150)\n    link = models.CharField(max_length=200, blank=True)\n    image = models.CharField(max_length=500, default='Image')\n    price = models.CharField(max_length=50, default='0')\n    annotation = models.CharField(max_length=1000)\n    socket = models.CharField(max_length=50)\n    threads = models.IntegerField(default=0)\n    cache = models.CharField(max_length=20)\n    frequency = models.CharField(max_length=50)\n    TDP = models.CharField(max_length=50)\n\n    objects = Manager()\n\n    def __str__(self):\n        return f'{self.id} {self.title}'\n\n\nclass GPU(models.Model):\n    id = models.BigAutoField(primary_key=True)\n    title = models.CharField(max_length=150)\n    link = models.CharField(max_length=200, default='link')\n    price = models.CharField(max_length=50, default='price')\n    image = models.CharField(max_length=200, default='image')\n    annotation = models.CharField(max_length=1000)\n    videoMemory = models.CharField(max_length=150)\n    typeOfVideoMemory = models.CharField(max_length=150)\n    addPower = models.BooleanField(default=False)\n\n    objects = Manager()\n\n    def __str__(self):\n        return f'{self.id} {self.title}'\n\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- KvantProject2020/mainapp/models.py	(revision b07ac3e18e91fb93abcf328e697e2028476b7966)
++++ KvantProject2020/mainapp/models.py	(date 1589514259911)
+@@ -50,3 +50,16 @@
+     def __str__(self):
+         return f'{self.id} {self.title}'
+ 
++
++class Motherboard(models.Model):
++    id = models.BigAutoField(primary_key=True)
++    title = models.CharField(max_length=150)
++    link = models.CharField(max_length=200, default='link')
++    price = models.CharField(max_length=50, default='price')
++    image = models.CharField(max_length=200, default='image')
++    annotation = models.CharField(max_length=1000)
++
++    objects = Manager()
++
++    def __str__(self):
++        return f'{self.id} {self.title}'
+Index: KvantProject2020/mainapp/admin.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>from django.contrib import admin\nfrom .models import Processor, GPU\n\nadmin.site.register(Processor, admin.ModelAdmin)\nadmin.site.register(GPU, admin.ModelAdmin)\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- KvantProject2020/mainapp/admin.py	(revision b07ac3e18e91fb93abcf328e697e2028476b7966)
++++ KvantProject2020/mainapp/admin.py	(date 1589514259905)
+@@ -1,5 +1,6 @@
+ from django.contrib import admin
+-from .models import Processor, GPU
++from .models import Processor, GPU, Motherboard
+ 
+ admin.site.register(Processor, admin.ModelAdmin)
+ admin.site.register(GPU, admin.ModelAdmin)
++admin.site.register(Motherboard, admin.ModelAdmin)
+\ No newline at end of file
