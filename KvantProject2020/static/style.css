@@ -56,22 +56,50 @@ li{
 .card-title {
     color: black;
 }
-.prcsr-title, .prcsr-annotation, .prcsr-price {
+.prcsr-title {
+    position: relative;
+    top: 25px;
+    left: 10vw;
     color: white;
     float: left;
-    margin: 10px 50% 40px 100px;
-    text-align: start;
+
+
 }
+
+.prcsr-price{
+    position: relative;
+    color: white;
+    top: 125px;
+    right: 37vw;
+    float: right;
+}
+
+.prcsr-annotation{
+    color: white;
+    font-size: 23px;
+    position: relative;
+    top: 38vh;
+    left: 12vw;
+    width: 1100px;
+
+}
+
+.productImg{
+    position: relative;
+    top: 120px;
+    left:21vw;
+    float: left;
+}
+
+
+
 .prcsr-back {
     background: gainsboro;
     -webkit-border-radius: 13px 13px 20px 20px;
     -moz-border-radius: 10px 10px 20px 20px;
     height: 20%;
 }
-.element-image {
-    display: block;
-    max-width: 100%;
-}
+
 .footer-button {
     text-align: center;
     color: black;
