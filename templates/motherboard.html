@@ -1,11 +1,13 @@
 {% extends "processor.html" %}
-        {% block content %}
-        <div class="element-image">
-            <img width="200px" style="float: left; margin: 40px 50% 0 100px" src="{{ mthboard.image }}"><br>
+    {% block content %}
+        <div class="productBlock">
+            <img width="200px" class="productImg"  src="{{ mthboard.image }}"><br>
+            <h2 class="prcsr-title" >{{ mthboard.title }}</h2><br>
+            <h3 class="prcsr-price">{{ mthboard.price }} руб.</h3>
+            <button class="btn btn-warning " style="position: relative; top:20vh;right: 164px; width: 150px; height: 40px">Купить</button>
         </div>
-        <h2 class="prcsr-title" style="font-size: 50px">{{ mthboard.title }}</h2><br>
-        <h4 class="prcsr-annotation">{{ mthboard.annotation }}</h4><br>
-        <h3 class="prcsr-price">{{ mthboard.price }} руб.</h3>
+        <div class="annBlock">
+            <h4 >Описание</h4>
+            <h4 class="prcsr-annotation">{{ mthboard.annotation }}</h4><br>
+        </div>
     {% endblock %}
-</body>
-</html>

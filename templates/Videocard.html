@@ -1,7 +1,12 @@
 {% extends 'index.html' %}
 {% load static %}
 {% block content %}
-    <h3 class="product-title" >{{ videocard.GPU_Name }}</h3><br>
-    <h3 class="product-price">{{ gpu.GPU_Price }}13000 руб.</h3>
-    <h4 class="product-annotation"><span style="font-size: 35px">Краткое описание:</span><br>Poka net</h4><br>
+    <div class="productBlock">
+        <h3 class="prcsr-title" >{{ videocard.GPU_Name }}</h3><br>
+        <h3 class="prcsr-price">{{ gpu.GPU_Price }}13000 руб.</h3>
+        <button class="btn btn-warning " style="position: relative; top:20vh; right: 7.5vw; width: 150px; height: 40px">Купить</button>
+    </div>
+    <div class="annBlock">
+        <h4 class="prcsr-annotation"><span style="font-size: 35px">Краткое описание:</span><br>Poka net</h4><br>
+    </div>
 {% endblock %}

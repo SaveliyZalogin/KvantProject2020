@@ -1,13 +1,14 @@
 {% extends "index.html" %}
 
     {% block content %}
-        <div class="element-image">
-            <img width="250px" style="float: left; margin: 40px 50% 0 100px" src="{{ videokarta.image }}"><br>
+        <div class="productBlock">
+            <img width="200px" class="productImg" src="{{ videokarta.image }}">
+            <h2 style="position:relative;right: 100px" >{{ videokarta.title }}</h2><br>
+            <h3 class="prcsr-price">{{ videokarta.price }} руб.</h3>
+            <button class="btn btn-warning " style="position: relative; top:20vh;left: 133px; width: 150px; height: 40px">Купить</button>
         </div>
-        <h2 class="prcsr-title" style="font-size: 50px">{{ videokarta.title }}</h2><br>
-        <h4 class="prcsr-annotation">{{ properties }}</h4><br>
-        <h3 class="prcsr-price">{{ videokarta.price }} руб.</h3>
+        <div class="annBlock">
+            <h4 >Описание</h4>
+            <p class="prcsr-annotation">{{ gpu.annotation }}</p>
+        </div>
     {% endblock %}
-
-</body>
-</html>
