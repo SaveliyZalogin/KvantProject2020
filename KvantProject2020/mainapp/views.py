@@ -13,11 +13,14 @@ def parce_processor_properties(element):
     result = ''
     processors = models.Processor.objects.all()
     gpus = models.GPU.objects.all()
+    motherboards = models.Motherboard.objects.all()
     html = ''
     link_list = []
     for link in processors:
         link_list.append(link.link)
     for link in gpus:
+        link_list.append(link.link)
+    for link in motherboards:
         link_list.append(link.link)
     for i in link_list:
         if i == element.link:
@@ -35,7 +38,8 @@ def parce_processor_properties(element):
 def parse(product_list_link):
     processors = models.Processor.objects.all()
     gpus = models.GPU.objects.all()
-    if len(processors) == 0 or len(gpus) == 0:
+    motherboards = models.Motherboard.objects.all()
+    if len(processors) == 0 or len(gpus) == 0 or len(motherboards) == 0:
         r = requests.get(product_list_link)
         soup = BeautifulSoup(r.content, 'lxml')
         name = soup.find_all('a', class_="link_gtm-js link_pageevents-js ddl_product_link")
@@ -53,7 +57,7 @@ def parse(product_list_link):
             brand = re.findall(r'"brandName":"(.*)",', finalall)
             print(finalall)
             print(finalImage)
-            print(i)
+            print(category)
             if category[0] == 'Процессоры':
                 try:
                     models.Processor.objects.get(title=fnTitle[0],
@@ -62,8 +66,12 @@ def parse(product_list_link):
                                                  image=finalImage,
                                                  brand_name=brand[0])
                 except:
-                    models.Processor.objects.create_unit(title=fnTitle[0], link=finalLink, price=fnPrice[0], image=finalImage)
-            else:
+                    models.Processor.objects.create_unit(title=fnTitle[0],
+                                                         link=finalLink,
+                                                         price=fnPrice[0],
+                                                         image=finalImage,
+                                                         brand=brand[0])
+            elif category[0] == 'Видеокарты':
                 try:
                     models.GPU.objects.get(title=fnTitle[0],
                                            link=finalLink,
@@ -71,7 +79,24 @@ def parse(product_list_link):
                                            image=finalImage,
                                            brand=brand[0])
                 except:
-                    models.GPU.objects.create_unit(title=fnTitle[0], link=finalLink, price=fnPrice[0], image=finalImage)
+                    models.GPU.objects.create_unit(title=fnTitle[0],
+                                                   link=finalLink,
+                                                   price=fnPrice[0],
+                                                   image=finalImage,
+                                                   brand=brand[0])
+            else:
+                try:
+                    models.Motherboard.objects.get(title=fnTitle[0],
+                                                   link=finalLink,
+                                                   price=fnPrice[0],
+                                                   image=finalImage,
+                                                   brand=brand[0])
+                except:
+                    models.Motherboard.objects.create_unit(title=fnTitle[0],
+                                                           link=finalLink,
+                                                           price=fnPrice[0],
+                                                           image=finalImage,
+                                                           brand=brand[0])
 # def parse():
 #     title = ''
 #     link = ''
@@ -183,3 +208,23 @@ def gpu(request, gpu_id):
         'properties': properties,
     }
     return render(request, "gpu.html", context)
+
+
+def motherboards(request):
+    motherboards = models.Motherboard.objects.all()
+    parse("https://bit.ly/2LrPujh")
+    context = {
+        'motherboards': motherboards,
+
+    }
+    return render(request, "motherboardList.html", context)
+
+
+def motherboard(request, motherboard_id):
+    mthboard = models.Motherboard.objects.get(id=motherboard_id)
+    properties = parce_processor_properties(mthboard)
+    context = {
+        'mthboard': mthboard,
+        'properties': properties,
+    }
+    return render(request, "motherboard.html", context)

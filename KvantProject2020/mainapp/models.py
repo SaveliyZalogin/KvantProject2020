@@ -52,3 +52,17 @@ class GPU(models.Model):
     def __str__(self):
         return f'{self.id} {self.title}'
 
+
+class Motherboard(models.Model):
+    id = models.BigAutoField(primary_key=True)
+    title = models.CharField(max_length=150)
+    link = models.CharField(max_length=200, default='link')
+    price = models.CharField(max_length=50, default='price')
+    brand_name = models.CharField(max_length=100, default='None')
+    image = models.CharField(max_length=200, default='image')
+    annotation = models.CharField(max_length=1000)
+
+    objects = Manager()
+
+    def __str__(self):
+        return f'{self.id} {self.title}'
