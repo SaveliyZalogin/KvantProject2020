@@ -10,8 +10,8 @@ class Manufacturer(models.Model):
 
 
 class Manager(models.Manager):
-    def create_unit(self, title, link, price, image):
-        processor = self.create(title=title, link=link, price=price, image=image)
+    def create_unit(self, title, link, price, image, brand):
+        processor = self.create(title=title, link=link, price=price, image=image, brand_name=brand)
         return processor
 
 
@@ -21,6 +21,7 @@ class Processor(models.Model):
     link = models.CharField(max_length=200, blank=True)
     image = models.CharField(max_length=500, default='Image')
     price = models.CharField(max_length=50, default='0')
+    brand_name = models.CharField(max_length=100, default='None')
     annotation = models.CharField(max_length=1000)
     socket = models.CharField(max_length=50)
     threads = models.IntegerField(default=0)
@@ -39,6 +40,7 @@ class GPU(models.Model):
     title = models.CharField(max_length=150)
     link = models.CharField(max_length=200, default='link')
     price = models.CharField(max_length=50, default='price')
+    brand_name = models.CharField(max_length=100, default='None')
     image = models.CharField(max_length=200, default='image')
     annotation = models.CharField(max_length=1000)
     videoMemory = models.CharField(max_length=150)

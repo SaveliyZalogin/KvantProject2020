@@ -50,17 +50,26 @@ def parse(product_list_link):
             fnPrice = re.findall(r'"price":(\d*),', finalall)
             fnTitle = re.findall(r'"shortName":"(.*)","categoryName"', finalall)
             category = re.findall(r'"categoryName":"(\w*)","brandName"', finalall)
+            brand = re.findall(r'"brandName":"(.*)",', finalall)
             print(finalall)
             print(finalImage)
             print(i)
             if category[0] == 'Процессоры':
                 try:
-                    models.Processor.objects.get(title=fnTitle[0], link=finalLink, price=fnPrice[0], image=finalImage)
+                    models.Processor.objects.get(title=fnTitle[0],
+                                                 link=finalLink,
+                                                 price=fnPrice[0],
+                                                 image=finalImage,
+                                                 brand_name=brand[0])
                 except:
                     models.Processor.objects.create_unit(title=fnTitle[0], link=finalLink, price=fnPrice[0], image=finalImage)
             else:
                 try:
-                    models.GPU.objects.get(title=fnTitle[0], link=finalLink, price=fnPrice[0], image=finalImage)
+                    models.GPU.objects.get(title=fnTitle[0],
+                                           link=finalLink,
+                                           price=fnPrice[0],
+                                           image=finalImage,
+                                           brand=brand[0])
                 except:
                     models.GPU.objects.create_unit(title=fnTitle[0], link=finalLink, price=fnPrice[0], image=finalImage)
 # def parse():
@@ -130,14 +139,14 @@ def results(request):
     price = request.GET.get('price', '')
     manufacturer = request.GET.get('manufacturer', '')
     if len(search) > 0:
-        sprc = re.findall('Процессор за \d*', search)
-        sgpu = re.findall('Видеокарта за \d*', search)
+        sprc = re.findall('ПРОЦЕССОР ЗА (\d*)', search.upper())
+        sgpu = re.findall('ВИДЕОКАРТА ЗА (\d*)', search.upper())
         if len(sprc) > 0 or len(sgpu) > 0:
             if len(sprc) > 0:
-                srchprc = re.findall('Процессор за (\d*)', search)
+                srchprc = re.findall('ПРОЦЕССОР ЗА (\d*)', search.upper())
                 processors = models.Processor.objects.filter(price=srchprc[0])
             elif len(sgpu) > 0:
-                srchpgu = re.findall('Видеокарта за (\d*)', search)
+                srchpgu = re.findall('ВИДЕОКАРТА ЗА (\d*)', search.upper())
                 gpus = models.GPU.objects.filter(price=srchpgu[0])
         else:
             processors = models.Processor.objects.filter(title__icontains=search)

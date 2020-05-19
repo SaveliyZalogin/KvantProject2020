@@ -4,7 +4,9 @@
         <div style="margin: 30px 50px 10px 50px">
             <form class="form-inline my-2 my-lg-0" action="{% url 'results' %}">
               <input class="form-control mr-sm-2" name="price" type="search" placeholder="Цена" aria-label="Цена">
-              <input class="form-control mr-sm-2" name="manufacturer" type="search" placeholder="Производитель" aria-label="Производитель">
+              <p style="color: white">Производитель:</p><br>
+              <p style="color: white">AMD</p><input style="margin-right: 50px" name="manufacturer_amd" type="checkbox" placeholder="Производитель"><br>
+              <p style="color: white">Intel</p><input name="manufacturer_intel" type="checkbox" placeholder="Производитель">
               <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
             </form>
         </div>
