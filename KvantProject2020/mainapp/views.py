@@ -54,6 +54,7 @@ def parse(product_list_link):
             fnPrice = re.findall(r'"price":(\d*),', finalall)
             fnTitle = re.findall(r'"shortName":"(.*)","categoryName"', finalall)
             category = re.findall(r'"categoryName":"(\w*)","brandName"', finalall)
+            categorymth = re.findall(r'categoryName&quot;:&quot;(\w*)&quot;,', finalall)
             brand = re.findall(r'"brandName":"(.*)",', finalall)
             print(finalall)
             print(finalImage)
@@ -84,7 +85,7 @@ def parse(product_list_link):
                                                    price=fnPrice[0],
                                                    image=finalImage,
                                                    brand=brand[0])
-            else:
+            elif categorymth[0] == 'Материнские платы':
                 try:
                     models.Motherboard.objects.get(title=fnTitle[0],
                                                    link=finalLink,
@@ -148,11 +149,15 @@ def processor_list(request):
 
 
 def gpu_list(request):
+    brand_gpu_query = []
     all_gpus = models.GPU.objects.all()
+    for gpu in all_gpus:
+        if gpu.brand_name not in brand_gpu_query:
+            brand_gpu_query.append(gpu.brand_name)
     parse('https://bit.ly/2WaZ1QO')
     context = {
         'gpus': all_gpus,
-
+        'gpu_query': brand_gpu_query,
     }
     return render(request, "gpuList.html", context)
 
@@ -160,9 +165,53 @@ def gpu_list(request):
 def results(request):
     processors = None
     gpus = None
+    postavka = ''
+    brand = ''
     search = request.GET.get('search', '')
     price = request.GET.get('price', '')
-    manufacturer = request.GET.get('manufacturer', '')
+    manufacturer_amd = request.GET.get('manufacturer_amd', '')
+    manufacturer_intel = request.GET.get('manufacturer_intel', '')
+    manufacturer_msi = request.GET.get('manufacturer_msi', '')
+    manufacturer_gigabyte = request.GET.get('manufacturer_gigabyte', '')
+    manufacturer_palit = request.GET.get('manufacturer_palit', '')
+    manufacturer_asus = request.GET.get('manufacturer_asus', '')
+    in_oem = request.GET.get('in_oem', '')
+    in_box = request.GET.get('in_box', '')
+    if in_oem == 'on':
+        postavka = 'OEM'
+        processors = models.Processor.objects.filter(title__icontains=postavka)
+    elif in_box == 'on':
+        postavka = 'BOX'
+        processors = models.Processor.objects.filter(title__icontains=postavka)
+    if manufacturer_amd == 'on':
+        brand = 'AMD'
+        processors = models.Processor.objects.filter(brand_name=brand)
+    elif manufacturer_intel == 'on':
+        brand = 'INTEL'
+        processors = models.Processor.objects.filter(brand_name=brand)
+    elif manufacturer_msi == 'on':
+        brand = 'MSI'
+        gpus = models.GPU.objects.filter(brand_name=brand)
+    elif manufacturer_gigabyte == 'on':
+        brand = 'GIGABYTE'
+        gpus = models.GPU.objects.filter(brand_name=brand)
+    elif manufacturer_palit == 'on':
+        brand = 'PALIT'
+        gpus = models.GPU.objects.filter(brand_name=brand)
+    elif manufacturer_asus == 'on':
+        brand = 'ASUS'
+        gpus = models.GPU.objects.filter(brand_name=brand)
+    if len(price) > 0:
+        price = price
+        processors = models.Processor.objects.filter(price=price)
+        gpus = models.GPU.objects.filter(price=price)
+    if len(postavka) > 0 and len(brand) > 0:
+        processors = models.Processor.objects.filter(title__icontains=postavka, brand_name=brand)
+    elif len(brand) > 0 and len(price) > 0:
+        processors = models.Processor.objects.filter(brand_name=brand, price=price)
+        gpus = models.GPU.objects.filter(brand_name=brand, price=price)
+    elif len(postavka) > 0 and len(brand) > 0 and len(price) > 0:
+        processors = models.Processor.objects.filter(title__icontains=postavka, brand_name=brand, price=price)
     if len(search) > 0:
         sprc = re.findall('ПРОЦЕССОР ЗА (\d*)', search.upper())
         sgpu = re.findall('ВИДЕОКАРТА ЗА (\d*)', search.upper())
@@ -176,9 +225,6 @@ def results(request):
         else:
             processors = models.Processor.objects.filter(title__icontains=search)
             gpus = models.GPU.objects.filter(title__icontains=search)
-    if len(price) > 0:
-        for i in range(0, int(price) + 1):
-            processors = models.Processor.objects.filter(price=i)
     if search.upper() == 'ПРОЦЕССОРЫ':
         return HttpResponseRedirect("/processors/")
     elif search.upper() == 'ВИДЕОКАРТЫ':

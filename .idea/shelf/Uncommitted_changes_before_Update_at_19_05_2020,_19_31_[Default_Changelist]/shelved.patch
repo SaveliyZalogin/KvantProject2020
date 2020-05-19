@@ -1,0 +1,191 @@
+Index: KvantProject2020/mainapp/views.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>from django.shortcuts import render\nfrom urllib.request import urlopen\nimport re\nfrom . import models\nimport time\nfrom bs4 import BeautifulSoup\nimport requests\nfrom django.http import HttpResponseRedirect\nimport random\n\n\ndef parce_processor_properties(element):\n    result = ''\n    processors = models.Processor.objects.all()\n    gpus = models.GPU.objects.all()\n    motherboards = models.Motherboard.objects.all()\n    html = ''\n    link_list = []\n    for link in processors:\n        link_list.append(link.link)\n    for link in gpus:\n        link_list.append(link.link)\n    for link in motherboards:\n        link_list.append(link.link)\n    for i in link_list:\n        if i == element.link:\n            if len(element.annotation) == 0:\n                r = requests.get(str(i))\n                soup = BeautifulSoup(r.content, 'lxml')\n                annotation = soup.find('p', class_=\"short_description\")\n                result = annotation.get_text()\n                element.annotation = result\n                element.save()\n                print(result)\n    return result\n\n\ndef parse(product_list_link):\n    processors = models.Processor.objects.all()\n    gpus = models.GPU.objects.all()\n    motherboards = models.Motherboard.objects.all()\n    if len(processors) == 0 or len(gpus) == 0 or len(motherboards) == 0:\n        r = requests.get(product_list_link)\n        soup = BeautifulSoup(r.content, 'lxml')\n        name = soup.find_all('a', class_=\"link_gtm-js link_pageevents-js ddl_product_link\")\n        price = soup.find_all('div', class_=\"actions subcategory-product-item__action-container\")\n        link = soup.find_all('a', class_=\"link_gtm-js link_pageevents-js ddl_product_link\")\n        image = soup.find_all('img', class_=\"lazyload\")\n        for i in range(3, len(name)):\n            title = name[i].get_text()\n            finalall = price[i].get('data-params')\n            finalLink = link[i].get('href')\n            finalImage = image[i - 3].get('data-src')\n            fnPrice = re.findall(r'\"price\":(\\d*),', finalall)\n            fnTitle = re.findall(r'\"shortName\":\"(.*)\",\"categoryName\"', finalall)\n            category = re.findall(r'\"categoryName\":\"(\\w*)\",\"brandName\"', finalall)\n            brand = re.findall(r'\"brandName\":\"(.*)\",', finalall)\n            print(finalall)\n            print(finalImage)\n            print(category)\n            if category[0] == 'Процессоры':\n                try:\n                    models.Processor.objects.get(title=fnTitle[0],\n                                                 link=finalLink,\n                                                 price=fnPrice[0],\n                                                 image=finalImage,\n                                                 brand_name=brand[0])\n                except:\n                    models.Processor.objects.create_unit(title=fnTitle[0],\n                                                         link=finalLink,\n                                                         price=fnPrice[0],\n                                                         image=finalImage,\n                                                         brand=brand[0])\n            elif category[0] == 'Видеокарты':\n                try:\n                    models.GPU.objects.get(title=fnTitle[0],\n                                           link=finalLink,\n                                           price=fnPrice[0],\n                                           image=finalImage,\n                                           brand=brand[0])\n                except:\n                    models.GPU.objects.create_unit(title=fnTitle[0],\n                                                   link=finalLink,\n                                                   price=fnPrice[0],\n                                                   image=finalImage,\n                                                   brand=brand[0])\n            else:\n                try:\n                    models.Motherboard.objects.get(title=fnTitle[0],\n                                                   link=finalLink,\n                                                   price=fnPrice[0],\n                                                   image=finalImage,\n                                                   brand=brand[0])\n                except:\n                    models.Motherboard.objects.create_unit(title=fnTitle[0],\n                                                           link=finalLink,\n                                                           price=fnPrice[0],\n                                                           image=finalImage,\n                                                           brand=brand[0])\n# def parse():\n#     title = ''\n#     link = ''\n#     a = 0\n#     url = urlopen('https://www.citilink.ru/catalog/computers_and_notebooks/parts/cpu/')\n#     html = url.read().decode('UTF-8')\n#     regex_link = '<div class=\"wrap-img\"><a href=\"(.*)\"'\n#     link_list = re.findall(regex_link, html)\n#     regex_title = '<span class=\"image_container\"></span>(.*)&nbsp;(.*)\\s{16}</a>'\n#     # regex_annotation = '<p class=\"short_description\">(.*)&nbsp;&#151;\\s(.*)&nbsp;&#151;\\s(.*)&nbsp;&#151;\\s(.*)</p>'\n#     title_list = re.findall(regex_title, html)\n#     print(len(title_list))\n#     print(len(link_list))\n#     link_list.remove('https://www.citilink.ru/catalog/computers_and_notebooks/parts/cpu/1067853/')\n#     for c in range(0, len(title_list)):\n#         b = title_list[c]\n#         title = b[0] + ' ' + b[1]\n#         m = link_list[c]\n#         link = m\n#         try:\n#             models.Processor.objects.get(title=title, link=link)\n#         except:\n#             models.Processor.objects.create_unit(title=title, link=link)\n#             models.Processor.objects.create_unit(title=title, link=finalLink, price=finalPrice)\n\n\ndef index(request):\n    processors = models.Processor.objects.all()\n    gpus = models.GPU.objects.all()\n    motherboards = models.Motherboard.objects.all()\n    resultprc = random.choice(processors)\n    resultgpu = random.choice(gpus)\n    resultmth = random.choice(motherboards)\n    context = {\n        'prc': resultprc,\n        'gpu': resultgpu,\n        'mth': resultmth,\n    }\n    return render(request, \"index.html\", context)\n\n\ndef processor_list(request):\n    all_processors = models.Processor.objects.all()\n    parse('https://bit.ly/2VQnLik')\n    context = {\n        'processors': all_processors,\n    }\n    return render(request, \"processorList.html\", context)\n\n\ndef gpu_list(request):\n    all_gpus = models.GPU.objects.all()\n    parse('https://bit.ly/2WaZ1QO')\n    context = {\n        'gpus': all_gpus,\n\n    }\n    return render(request, \"gpuList.html\", context)\n\n\ndef results(request):\n    processors = None\n    gpus = None\n    search = request.GET.get('search', '')\n    price = request.GET.get('price', '')\n    manufacturer = request.GET.get('manufacturer', '')\n    if len(search) > 0:\n        sprc = re.findall('ПРОЦЕССОР ЗА (\\d*)', search.upper())\n        sgpu = re.findall('ВИДЕОКАРТА ЗА (\\d*)', search.upper())\n        if len(sprc) > 0 or len(sgpu) > 0:\n            if len(sprc) > 0:\n                srchprc = re.findall('ПРОЦЕССОР ЗА (\\d*)', search.upper())\n                processors = models.Processor.objects.filter(price=srchprc[0])\n            elif len(sgpu) > 0:\n                srchpgu = re.findall('ВИДЕОКАРТА ЗА (\\d*)', search.upper())\n                gpus = models.GPU.objects.filter(price=srchpgu[0])\n        else:\n            processors = models.Processor.objects.filter(title__icontains=search)\n            gpus = models.GPU.objects.filter(title__icontains=search)\n    if len(price) > 0:\n        for i in range(0, int(price) + 1):\n            processors = models.Processor.objects.filter(price=i)\n    if search.upper() == 'ПРОЦЕССОРЫ':\n        return HttpResponseRedirect(\"/processors/\")\n    elif search.upper() == 'ВИДЕОКАРТЫ':\n        return HttpResponseRedirect(\"/gpus/\")\n    context = {\n        'processsors': processors,\n        'gpus': gpus,\n    }\n    return render(request, \"results.html\", context)\n\n\ndef processor(request, processor_id):\n    processor = models.Processor.objects.get(id=processor_id)\n    properties = parce_processor_properties(processor)\n    context = {\n        'processor': processor,\n        'properties': properties,\n    }\n    return render(request, \"processor.html\", context)\n\n\ndef gpu(request, gpu_id):\n    gpu = models.GPU.objects.get(id=gpu_id)\n    properties = parce_processor_properties(gpu)\n    context = {\n        'videokarta': gpu,\n        'properties': properties,\n    }\n    return render(request, \"gpu.html\", context)\n\n\ndef motherboards(request):\n    motherboards = models.Motherboard.objects.all()\n    parse(\"https://bit.ly/2LrPujh\")\n    context = {\n        'motherboards': motherboards,\n\n    }\n    return render(request, \"motherboardList.html\", context)\n\n\ndef motherboard(request, motherboard_id):\n    mthboard = models.Motherboard.objects.get(id=motherboard_id)\n    properties = parce_processor_properties(mthboard)\n    context = {\n        'mthboard': mthboard,\n        'properties': properties,\n    }\n    return render(request, \"motherboard.html\", context)\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- KvantProject2020/mainapp/views.py	(revision bae0215a01a01563ec1d066b56483a8219525818)
++++ KvantProject2020/mainapp/views.py	(date 1589891277262)
+@@ -54,6 +54,7 @@
+             fnPrice = re.findall(r'"price":(\d*),', finalall)
+             fnTitle = re.findall(r'"shortName":"(.*)","categoryName"', finalall)
+             category = re.findall(r'"categoryName":"(\w*)","brandName"', finalall)
++            categorymth = re.findall(r'categoryName&quot;:&quot;(\w*)&quot;,', finalall)
+             brand = re.findall(r'"brandName":"(.*)",', finalall)
+             print(finalall)
+             print(finalImage)
+@@ -84,7 +85,7 @@
+                                                    price=fnPrice[0],
+                                                    image=finalImage,
+                                                    brand=brand[0])
+-            else:
++            elif categorymth[0] == 'Материнские платы':
+                 try:
+                     models.Motherboard.objects.get(title=fnTitle[0],
+                                                    link=finalLink,
+@@ -148,11 +149,15 @@
+ 
+ 
+ def gpu_list(request):
++    brand_gpu_query = []
+     all_gpus = models.GPU.objects.all()
++    for gpu in all_gpus:
++        if gpu.brand_name not in brand_gpu_query:
++            brand_gpu_query.append(gpu.brand_name)
+     parse('https://bit.ly/2WaZ1QO')
+     context = {
+         'gpus': all_gpus,
+-
++        'gpu_query': brand_gpu_query,
+     }
+     return render(request, "gpuList.html", context)
+ 
+@@ -160,9 +165,36 @@
+ def results(request):
+     processors = None
+     gpus = None
++    videokards = models.GPU.objects.all()
++    postavka = ''
++    brand = ''
+     search = request.GET.get('search', '')
+     price = request.GET.get('price', '')
+-    manufacturer = request.GET.get('manufacturer', '')
++    manufacturer_amd = request.GET.get('manufacturer_amd', '')
++    manufacturer_intel = request.GET.get('manufacturer_intel', '')
++    in_oem = request.GET.get('in_oem', '')
++    in_box = request.GET.get('in_box', '')
++    if in_oem == 'on':
++        postavka = 'OEM'
++        processors = models.Processor.objects.filter(title__icontains=postavka)
++    elif in_box == 'on':
++        postavka = 'BOX'
++        processors = models.Processor.objects.filter(title__icontains=postavka)
++    if manufacturer_amd == 'on':
++        brand = 'AMD'
++        processors = models.Processor.objects.filter(brand_name=brand)
++    elif manufacturer_intel == 'on':
++        brand = 'INTEL'
++        processors = models.Processor.objects.filter(brand_name=brand)
++    if len(price) > 0:
++        price = price
++        processors = models.Processor.objects.filter(price=price)
++    if len(postavka) > 0 and len(brand) > 0:
++        processors = models.Processor.objects.filter(title__icontains=postavka, brand_name=brand)
++    elif len(brand) > 0 and len(price) > 0:
++        processors = models.Processor.objects.filter(title__icontains=postavka, price=price)
++    elif len(postavka) > 0 and len(brand) > 0 and len(price) > 0:
++        processors = models.Processor.objects.filter(title__icontains=postavka, brand_name=brand, price=price)
+     if len(search) > 0:
+         sprc = re.findall('ПРОЦЕССОР ЗА (\d*)', search.upper())
+         sgpu = re.findall('ВИДЕОКАРТА ЗА (\d*)', search.upper())
+@@ -176,9 +208,6 @@
+         else:
+             processors = models.Processor.objects.filter(title__icontains=search)
+             gpus = models.GPU.objects.filter(title__icontains=search)
+-    if len(price) > 0:
+-        for i in range(0, int(price) + 1):
+-            processors = models.Processor.objects.filter(price=i)
+     if search.upper() == 'ПРОЦЕССОРЫ':
+         return HttpResponseRedirect("/processors/")
+     elif search.upper() == 'ВИДЕОКАРТЫ':
+Index: templates/index.html
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><!DOCTYPE html>\n<html lang=\"en\">\n{% load static %}\n<head>\n    <meta charset=\"UTF-8\">\n    <title>Just site</title>\n    <link rel=\"stylesheet\" href={% static \"style.css\" %}>\n    <link rel=\"stylesheet\" href=\"https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css\" integrity=\"sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh\" crossorigin=\"anonymous\">\n</head>\n<body style=\"background:#2D2B2C ; text-align: center\">\n    <div>\n        {% block navmenu %}\n            <div class=\"head-nav\">\n                <nav class=\"navbar navbar-expand-lg navbar-light bg-warning \">\n                  <a class=\"navbar-brand\" href=\"{% url \"main\" %}\">PC Master</a>\n                  <div class=\"collapse navbar-collapse\" id=\"navbarSupportedContent\">\n                    <ul class=\"navbar-nav mr-auto\">\n                      <li class=\"nav-item active\">\n                        <a class=\"nav-link\" href=\"{% url \"processors\" %}\">Процессоры<span class=\"sr-only\">(current)</span></a>\n                      </li>\n                      <li class=\"nav-item active\">\n                        <a class=\"nav-link\" href=\"#\">Видеокарты</a>\n                      </li>\n                      <li class=\"nav-item dropdown active\">\n                        <a class=\"nav-link dropdown-toggle\" href=\"#\" id=\"navbarDropdown\" role=\"button\" data-toggle=\"dropdown\" aria-haspopup=\"true\" aria-expanded=\"false\">\n                          Переферия\n                        </a>\n                        <div class=\"dropdown-menu\" style=\"background: gainsboro\" aria-labelledby=\"navbarDropdown\">\n                          <a class=\"dropdown-item\" href=\"#\">Мышь</a>\n                          <a class=\"dropdown-item\" href=\"#\">Клавиатура</a>\n                          <div class=\"dropdown-divider\"></div>\n                          <a class=\"dropdown-item\" href=\"#\">Другое...</a>\n                        </div>\n                      </li>\n                    </ul>\n                    <form class=\"form-inline my-2 my-lg-0\" action=\"{% url 'results' %}\">\n                      <input class=\"form-control mr-sm-2\" name=\"search\" type=\"search\" placeholder=\"Search\" aria-label=\"Search\">\n                      <button class=\"btn btn-outline-success my-2 my-sm-0\" type=\"submit\">Search</button>\n                    </form>\n                  </div>\n                </nav>\n            </div>\n        {% endblock %}\n\n        {% block content %}\n            <div id=\"carouselExampleIndicators\" class=\"carousel slide\" data-ride=\"carousel\">\n\n              <ol class=\"carousel-indicators\">\n                <li data-target=\"#carouselExampleIndicators\" data-slide-to=\"0\" class=\"active\"></li>\n                <li data-target=\"#carouselExampleIndicators\" data-slide-to=\"1\"></li>\n                <li data-target=\"#carouselExampleIndicators\" data-slide-to=\"2\"></li>\n              </ol>\n              <div class=\"carousel-inner\">\n                <div class=\"carousel-item active\">\n                    <a href=\"{% url 'processor' prc.id %}\"><img class=\"element-image\" height=\"200px\" src=\"{{ prc.image }}\" alt=\"...\"></a>\n                    <p style=\"color: white\">{{ prc.title }}</p><br>\n                </div>\n                <div class=\"carousel-item\">\n                    <a href=\"{% url 'gpu' gpu.id %}\"><img class=\"element-image\" height=\"200px\" src=\"{{ gpu.image }}\" alt=\"...\"></a>\n                    <p style=\"color: white\">{{ gpu.title }}</p><br>\n                </div>\n                <div class=\"carousel-item\">\n                    <a href=\"{% url 'motherboard' mth.id %}\"><img class=\"element-image\" height=\"200px\" src=\"{{ mth.image }}\" alt=\"...\"></a>\n                    <p style=\"color: white\">{{ mth.title }}</p><br>\n                </div>\n              </div>\n              <a class=\"carousel-control-prev\" href=\"#carouselExampleIndicators\" role=\"button\" data-slide=\"prev\">\n                <span class=\"carousel-control-prev-icon\" aria-hidden=\"true\"></span>\n                <span class=\"sr-only\">Previous</span>\n              </a>\n              <a class=\"carousel-control-next\" href=\"#carouselExampleIndicators\" role=\"button\" data-slide=\"next\">\n                <span class=\"carousel-control-next-icon\" aria-hidden=\"true\"></span>\n                <span class=\"sr-only\">Next</span>\n              </a>\n            </div>\n            <a role=\"button\" href=\"{% url 'processors' %}\">\n            <div class=\"main-link-title card\">\n                <img height=\"400px\" src=\"https://st.overclockers.ru/c/350/300//images/preview/8XBnVDleGvIFIVG8.jpg\" class=\"card-img-top\">\n                <div class=\"card-body\">\n                    <h5 class=\"card-title\">Процессоры</h5>\n                    <p class=\"card-text\">Здесь можно посмотреть процессоры</p>\n                </div>\n            </div>\n            </a>\n            <a role=\"button\" href=\"{% url \"gpus\" %}\">\n            <div class=\"main-link-title card\">\n                <img height=\"400px\" src=\"https://i.playground.ru/p/zsmjRSMnt_vGKixTZq9Nyg.png\" class=\"card-img-top\">\n                <div class=\"card-body\">\n                    <h5 class=\"card-title\">Видеокарты</h5>\n                    <p class=\"card-text\">Здесь можно посмотреть видеокарты</p>\n                </div>\n            </div>\n            </a>\n            <a role=\"button\" href=\"{% url 'motherboards' %}\">\n            <div class=\"main-link-title card\">\n                <img height=\"400px\" src=\"https://peredpokupkoy.ru/img/kompiutery/komplektuiushchie/materinskie-platy/materinskie-platy-asus/otzyvy-asus-z170m-e-d3-12793087.jpg\" alt=\"Представьте себе вместо этого текста гору мышек и клавиатур\" class=\"card-img-top\">\n                <div class=\"card-body\">\n                    <h5 class=\"card-title\">Материнские платы</h5>\n                    <p class=\"card-text\">Здесь можно посмотреть материнские платы</p>\n                </div>\n            </div>\n            </a>\n        {% endblock %}\n    </div>\n<script src=\"https://code.jquery.com/jquery-3.4.1.slim.min.js\" integrity=\"sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n\" crossorigin=\"anonymous\"></script>\n<script src=\"https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js\" integrity=\"sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo\" crossorigin=\"anonymous\"></script>\n<script src=\"https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js\" integrity=\"sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6\" crossorigin=\"anonymous\"></script>\n</body>\n</html>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- templates/index.html	(revision bae0215a01a01563ec1d066b56483a8219525818)
++++ templates/index.html	(date 1589890533781)
+@@ -19,7 +19,7 @@
+                         <a class="nav-link" href="{% url "processors" %}">Процессоры<span class="sr-only">(current)</span></a>
+                       </li>
+                       <li class="nav-item active">
+-                        <a class="nav-link" href="#">Видеокарты</a>
++                        <a class="nav-link" href="{% url 'gpus' %}">Видеокарты</a>
+                       </li>
+                       <li class="nav-item dropdown active">
+                         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+Index: templates/gpuList.html
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>{% extends \"index.html\" %}\n\n    {% block content %}\n        {% for gpu in gpus %}\n            <div class=\"processor\">\n                <a role=\"button\" style=\"color: black; text-decoration: none; width: 20%\" href=\"{% url 'gpu' gpu.id %}\">\n                    <ul>\n                        <li><img src=\"{{ gpu.image }}\"></li>\n                        <li style=\"margin-left: 15px; width: 60%\"><h3>{{ gpu.title }}</h3></li>\n                        <li style=\"margin: 3% 0 3% 5%\"><h3>{{ gpu.price }} руб.</h3>\n                        <li style=\"margin: 3% 0 3% 10px\"><button class=\"btn btn-outline-warning btn-lg text-dark\">Купить</button></li>\n                    </ul>\n                </a>\n            </div>\n        {% endfor %}\n        <p class=\"footer-block\">\n        <form action=\"\">\n            <div class=\"footer-button right-margin\"><button id=\"q1\">1</button></div>\n            <div class=\"footer-button\"><button id=\"q2\">2</button></div>\n            <div class=\"footer-button\"><button id=\"q3\">3</button></div>\n        </form>\n    {% endblock %}\n\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- templates/gpuList.html	(revision bae0215a01a01563ec1d066b56483a8219525818)
++++ templates/gpuList.html	(date 1589891358223)
+@@ -1,6 +1,18 @@
+ {% extends "index.html" %}
+ 
+     {% block content %}
++        <div style="margin: 30px 50px 10px 50px">
++            <form class="form-inline my-2 my-lg-0" action="{% url 'results' %}">
++              <div>
++              <input class="form-control mr-sm-2" name="price" type="search" placeholder="Цена" aria-label="Цена">
++              <p style="color: white">Производитель:</p>
++              {% for brand in gpu_query %}
++                  <p style="color: white">{{ brand }}<input style="margin-right: 20px" name="manufacturer_amd" type="checkbox" placeholder="Производитель"></p>
++              {% endfor %}
++              <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
++              </div>
++            </form>
++        </div>
+         {% for gpu in gpus %}
+             <div class="processor">
+                 <a role="button" style="color: black; text-decoration: none; width: 20%" href="{% url 'gpu' gpu.id %}">
+@@ -8,6 +20,7 @@
+                         <li><img src="{{ gpu.image }}"></li>
+                         <li style="margin-left: 15px; width: 60%"><h3>{{ gpu.title }}</h3></li>
+                         <li style="margin: 3% 0 3% 5%"><h3>{{ gpu.price }} руб.</h3>
++
+                         <li style="margin: 3% 0 3% 10px"><button class="btn btn-outline-warning btn-lg text-dark">Купить</button></li>
+                     </ul>
+                 </a>
+Index: templates/processorList.html
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>{% extends \"index.html\" %}\n{% load static %}\n    {% block content %}\n        <div style=\"margin: 30px 50px 10px 50px\">\n            <form class=\"form-inline my-2 my-lg-0\" action=\"{% url 'results' %}\">\n              <input class=\"form-control mr-sm-2\" name=\"price\" type=\"search\" placeholder=\"Цена\" aria-label=\"Цена\">\n              <p style=\"color: white\">Производитель:</p><br>\n              <p style=\"color: white\">AMD</p><input style=\"margin-right: 50px\" name=\"manufacturer_amd\" type=\"checkbox\" placeholder=\"Производитель\"><br>\n              <p style=\"color: white\">Intel</p><input name=\"manufacturer_intel\" type=\"checkbox\" placeholder=\"Производитель\">\n              <button class=\"btn btn-outline-success my-2 my-sm-0\" type=\"submit\">Search</button>\n            </form>\n        </div>\n\n        {% for processor in processors %}\n            <div class=\"processor\">\n                <a role=\"button\" style=\"color: black; text-decoration: none; width: 20%\" href=\"{% url 'processor' processor.id %}\">\n                    <ul>\n                        <li><img src=\"{{ processor.image }}\"></li>\n                        <li style=\"margin-left: 15px; width: 45% \"><h3>{{ processor.title }}</h3></li>\n                        <li style=\"margin: 3% 0 3% 20%\"><h3>{{ processor.price }} руб.</h3>\n                        <li style=\"margin: 3% 0 3% 10px\"><button class=\"btn btn-outline-warning btn-lg text-dark\">Купить</button></li>\n                    </ul>\n                </a>\n            </div>\n        {% endfor %}\n        <p class=\"footer-block\">\n        <form action=\"\">\n            <div class=\"footer-button right-margin\"><button id=\"q1\">1</button></div>\n            <div class=\"footer-button\"><button id=\"q2\">2</button></div>\n            <div class=\"footer-button\"><button id=\"q3\">3</button></div>\n        </form>\n        </p>\n    {% endblock %}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- templates/processorList.html	(revision bae0215a01a01563ec1d066b56483a8219525818)
++++ templates/processorList.html	(date 1589888988150)
+@@ -3,11 +3,14 @@
+     {% block content %}
+         <div style="margin: 30px 50px 10px 50px">
+             <form class="form-inline my-2 my-lg-0" action="{% url 'results' %}">
++              <div>
+               <input class="form-control mr-sm-2" name="price" type="search" placeholder="Цена" aria-label="Цена">
+-              <p style="color: white">Производитель:</p><br>
+-              <p style="color: white">AMD</p><input style="margin-right: 50px" name="manufacturer_amd" type="checkbox" placeholder="Производитель"><br>
+-              <p style="color: white">Intel</p><input name="manufacturer_intel" type="checkbox" placeholder="Производитель">
++              <p style="color: white">Производитель:</p>
++              <p style="color: white">AMD<input style="margin-right: 20px" name="manufacturer_amd" type="checkbox" placeholder="Производитель">Intel<input name="manufacturer_intel" type="checkbox" placeholder="Производитель"></p>
++              <p style="color: white">Тип поставки:</p>
++              <p style="color: white">BOX<input style="margin-right: 20px" name="in_box" type="checkbox">OEM<input name="in_oem" type="checkbox"></p>
+               <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
++              </div>
+             </form>
+         </div>
+ 
+Index: templates/gpu.html
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>{% extends \"index.html\" %}\n\n    {% block content %}\n        <div class=\"element-image\">\n            <img width=\"250px\" style=\"float: left; margin: 40px 50% 0 100px\" src=\"{{ videokarta.image }}\"><br>\n        </div>\n        <h2 class=\"prcsr-title\" style=\"font-size: 50px\">{{ videokarta.title }}</h2><br>\n        <h4 class=\"prcsr-annotation\">{{ properties }}</h4><br>\n        <h3 class=\"prcsr-price\">{{ videokarta.price }} руб.</h3>\n    {% endblock %}\n\n</body>\n</html>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- templates/gpu.html	(revision bae0215a01a01563ec1d066b56483a8219525818)
++++ templates/gpu.html	(date 1589891456172)
+@@ -6,7 +6,8 @@
+         </div>
+         <h2 class="prcsr-title" style="font-size: 50px">{{ videokarta.title }}</h2><br>
+         <h4 class="prcsr-annotation">{{ properties }}</h4><br>
+-        <h3 class="prcsr-price">{{ videokarta.price }} руб.</h3>
++        <h3 class="prcsr-price">{{ videokarta.price }} руб.</h3><br>
++        <h3 style="float: left; margin: 3% 0 3% 5%; width: 50vw; color: white">{{ videokarta.annotation }} руб.</h3>
+     {% endblock %}
+ 
+ </body>
