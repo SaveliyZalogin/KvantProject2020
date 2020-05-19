@@ -130,8 +130,18 @@ def results(request):
     price = request.GET.get('price', '')
     manufacturer = request.GET.get('manufacturer', '')
     if len(search) > 0:
-        processors = models.Processor.objects.filter(title__icontains=search)
-        gpus = models.GPU.objects.filter(title__icontains=search)
+        sprc = re.findall('Процессор за \d*', search)
+        sgpu = re.findall('Видеокарта за \d*', search)
+        if len(sprc) > 0 or len(sgpu) > 0:
+            if len(sprc) > 0:
+                srchprc = re.findall('Процессор за (\d*)', search)
+                processors = models.Processor.objects.filter(price=srchprc[0])
+            elif len(sgpu) > 0:
+                srchpgu = re.findall('Видеокарта за (\d*)', search)
+                gpus = models.GPU.objects.filter(price=srchpgu[0])
+        else:
+            processors = models.Processor.objects.filter(title__icontains=search)
+            gpus = models.GPU.objects.filter(title__icontains=search)
     if len(price) > 0:
         for i in range(0, int(price) + 1):
             processors = models.Processor.objects.filter(price=i)
