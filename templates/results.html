@@ -3,7 +3,7 @@
     {% block content %}
         {% if processsors %}
             {% for processor in processsors %}
-            <div class="processor">
+            <div class="resProcessor">
                 <a role="button" style="color: black; text-decoration: none; width: 20%" href="{% url 'processor' processor.id %}">
                     <ul>
                         <li><img src="{{ processor.image }}"></li>
@@ -17,7 +17,7 @@
         {% endif %}
         {% if gpus %}
             {% for gpu in gpus %}
-            <div class="processor">
+            <div class="resProcessor">
                 <a role="button" style="color: black; text-decoration: none; width: 20%" href="{% url 'gpu' gpu.id %}">
                     <ul>
                         <li><img src="{{ gpu.image }}"></li>
@@ -30,5 +30,3 @@
             {% endfor %}
         {% endif %}
     {% endblock %}
-</body>
-</html>

@@ -47,9 +47,30 @@ li{
     height: 140px;
     margin: 20px 0 10px 30px;
     padding-top:10px ;
+    position: relative;
+    float: right;
+    right: 130px;
     -webkit-border-radius: 13px 13px 20px 20px;
     -moz-border-radius: 13px 13px 20px 20px;
 }
+
+.resProcessor {
+    background: whitesmoke;
+    width: 70%;
+    height: 140px;
+    margin: 20px 0 10px 30px;
+    padding-top:10px ;
+    position: relative;
+    -webkit-border-radius: 13px 13px 20px 20px;
+    -moz-border-radius: 13px 13px 20px 20px;
+}
+
+.navLinks{
+    font-size:15px;
+
+}
+
+
 .card-text {
     color: black;
 }
@@ -59,6 +80,7 @@ li{
 .prcsr-title {
     position: relative;
     left: 3vw;
+    top: 10px;
     color: black;
     float: left;
 
@@ -118,6 +140,15 @@ li{
     -webkit-border-radius: 13px 13px 20px 20px;
     -moz-border-radius: 10px 10px 20px 20px;
     height: 20%;
+}
+
+.filters{
+    margin: 30px 50px 10px 50px;
+    float: left;
+    background-color: whitesmoke;
+    color: black;
+    padding: 10px;
+    border-radius: 10px;
 }
 
 .footer-button {

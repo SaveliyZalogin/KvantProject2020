@@ -2,7 +2,7 @@
 
     {% block content %}
         {% for motherboard in motherboards %}
-            <div class="processor">
+            <div class="resProcessor">
                 <a role="button" style="color: black; text-decoration: none; width: 20%" href="{% url 'motherboard' motherboard.id %}">
                     <ul>
                         <li><img src="{{ motherboard.image }}"></li>

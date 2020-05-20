@@ -1,14 +1,14 @@
 {% extends "index.html" %}
 {% load static %}
     {% block content %}
-        <div style="margin: 30px 50px 10px 50px">
+        <div class="filters">
             <form class="form-inline my-2 my-lg-0" action="{% url 'results' %}">
               <div>
               <input class="form-control mr-sm-2" name="price" type="search" placeholder="Цена" aria-label="Цена">
-              <p style="color: white">Производитель:</p>
-              <p style="color: white">AMD<input style="margin-right: 20px" name="manufacturer_amd" type="checkbox" placeholder="Производитель">Intel<input name="manufacturer_intel" type="checkbox" placeholder="Производитель"></p>
-              <p style="color: white">Тип поставки:</p>
-              <p style="color: white">BOX<input style="margin-right: 20px" name="in_box" type="checkbox">OEM<input name="in_oem" type="checkbox"></p>
+              <p>Производитель:</p>
+              <p>AMD <input style="margin-right: 20px" name="manufacturer_amd" type="checkbox" placeholder="Производитель">Intel<input name="manufacturer_intel" type="checkbox" placeholder="Производитель"></p>
+              <p>Тип поставки:</p>
+              <p>BOX <input style="margin-right: 20px" name="in_box" type="checkbox">OEM<input name="in_oem" type="checkbox"></p>
               <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
               </div>
             </form>
