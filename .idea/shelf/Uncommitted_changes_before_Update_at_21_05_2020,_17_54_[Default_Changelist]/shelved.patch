@@ -1,0 +1,133 @@
+Index: KvantProject2020/static/style.css
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>ul{\n    list-style-type: none;\n    display: flex;\n}\n\nli{\n    margin-left: 10px;\n}\n\n.background {\n    width: 100vw;\n    background-color: darkslateblue;\n    text-align: center;\n}\n.head-nav {\n    background-color: gainsboro;\n    height: 5vh;\n}\n.title {\n    font-size: 35px;\n}\n.main-link-title {\n    margin: 5vh 2vw 2vh 5.2vw;\n    width: 25vw;\n    height: 60vh;\n    float: left;\n    padding-top: 30px;\n}\n.main-link {\n    margin-top: 20px;\n}\n.card-body {\n    background: whitesmoke;\n}\n.card-img-top {\n    border-bottom: 1px solid lightgray;\n}\n.form-filter {\n    margin-top: 20px;\n    margin-left: 20px;\n    float: left;\n    color: gainsboro;\n}\n.processor {\n    background: whitesmoke;\n    width: 70%;\n    height: 140px;\n    margin: 20px 0 10px 30px;\n    padding-top:10px ;\n    -webkit-border-radius: 13px 13px 20px 20px;\n    -moz-border-radius: 13px 13px 20px 20px;\n}\n.card-text {\n    color: black;\n}\n.card-title {\n    color: black;\n}\n.prcsr-title {\n    position: relative;\n    left: 3vw;\n    color: black;\n    float: left;\n\n\n}\n\n.prcsr-price{\n    position: relative;\n    color: black;\n    top: 12vh;\n    right: 17vw;\n    float: right;\n}\n\n.prcsr-annotation{\n    color: black;\n    font-size: 23px;\n    position: relative;\n    padding: 10px;\n    width: 1100px;\n\n}\n\n.productImg{\n    position: relative;\n    top: 10vh;\n    left: 7vw;\n    box-shadow: 0 0 8px gray;\n    border-radius: 10px;\n    float: left;\n}\n\n.productBlock{\n    background-color: white;\n    position: relative;\n    border-radius: 10px;\n    height: 500px;\n    width: 1100px;\n    top:120px;\n    left: 20vw;\n}\n\n.annBlock{\n    background-color: white;\n    position: relative;\n    border-radius: 10px;\n    height: auto;\n    width: 1100px;\n    top: 200px;\n    left: 376px;\n\n\n}\n\n.prcsr-back {\n    background: gainsboro;\n    -webkit-border-radius: 13px 13px 20px 20px;\n    -moz-border-radius: 10px 10px 20px 20px;\n    height: 20%;\n}\n\n.footer-button {\n    text-align: center;\n    color: black;\n    background: gainsboro;\n    height: 30px;\n    width: 50px;\n    float: left;\n    margin-left: 5px;\n}\n.footer-block {\n    display: inline-block;\n}\n.right-margin {\n    margin-left: 46%;\n}\n.carousel {\n    margin: 50px 50px 50px 50px;\n}\n.left-margin {\n    margin-left: 45%;\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- KvantProject2020/static/style.css	(revision 4f5bfbaf951682abc637994f8eeab130fb90f4c1)
++++ KvantProject2020/static/style.css	(date 1589942294726)
+@@ -61,7 +61,7 @@
+     left: 3vw;
+     color: black;
+     float: left;
+-
++    margin-top: 20px;
+ 
+ }
+ 
+Index: KvantProject2020/mainapp/views.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>from django.shortcuts import render\nfrom urllib.request import urlopen\nimport re\nfrom . import models\nimport time\nfrom bs4 import BeautifulSoup\nimport requests\nfrom django.http import HttpResponseRedirect\nimport random\n\n\ndef parce_processor_properties(element):\n    result = ''\n    processors = models.Processor.objects.all()\n    gpus = models.GPU.objects.all()\n    motherboards = models.Motherboard.objects.all()\n    html = ''\n    link_list = []\n    for link in processors:\n        link_list.append(link.link)\n    for link in gpus:\n        link_list.append(link.link)\n    for link in motherboards:\n        link_list.append(link.link)\n    for i in link_list:\n        if i == element.link:\n            if len(element.annotation) == 0:\n                r = requests.get(str(i))\n                soup = BeautifulSoup(r.content, 'lxml')\n                annotation = soup.find('p', class_=\"short_description\")\n                result = annotation.get_text()\n                element.annotation = result\n                element.save()\n                print(result)\n    return result\n\n\ndef parse(product_list_link):\n    processors = models.Processor.objects.all()\n    gpus = models.GPU.objects.all()\n    motherboards = models.Motherboard.objects.all()\n    if len(processors) == 0 or len(gpus) == 0 or len(motherboards) == 0:\n        r = requests.get(product_list_link)\n        soup = BeautifulSoup(r.content, 'lxml')\n        name = soup.find_all('a', class_=\"link_gtm-js link_pageevents-js ddl_product_link\")\n        price = soup.find_all('div', class_=\"actions subcategory-product-item__action-container\")\n        link = soup.find_all('a', class_=\"link_gtm-js link_pageevents-js ddl_product_link\")\n        image = soup.find_all('img', class_=\"lazyload\")\n        for i in range(3, len(name)):\n            title = name[i].get_text()\n            finalall = price[i].get('data-params')\n            finalLink = link[i].get('href')\n            finalImage = image[i - 3].get('data-src')\n            fnPrice = re.findall(r'\"price\":(\\d*),', finalall)\n            fnTitle = re.findall(r'\"shortName\":\"(.*)\",\"categoryName\"', finalall)\n            category = re.findall(r'\"categoryName\":\"(\\w*)\",\"brandName\"', finalall)\n            categorymth = re.findall(r'categoryName&quot;:&quot;(\\w*)&quot;,', finalall)\n            brand = re.findall(r'\"brandName\":\"(.*)\",', finalall)\n            print(finalall)\n            print(finalImage)\n            print(category)\n            if category[0] == 'Процессоры':\n                try:\n                    models.Processor.objects.get(title=fnTitle[0],\n                                                 link=finalLink,\n                                                 price=fnPrice[0],\n                                                 image=finalImage,\n                                                 brand_name=brand[0])\n                except:\n                    models.Processor.objects.create_unit(title=fnTitle[0],\n                                                         link=finalLink,\n                                                         price=fnPrice[0],\n                                                         image=finalImage,\n                                                         brand=brand[0])\n            elif category[0] == 'Видеокарты':\n                try:\n                    models.GPU.objects.get(title=fnTitle[0],\n                                           link=finalLink,\n                                           price=fnPrice[0],\n                                           image=finalImage,\n                                           brand=brand[0])\n                except:\n                    models.GPU.objects.create_unit(title=fnTitle[0],\n                                                   link=finalLink,\n                                                   price=fnPrice[0],\n                                                   image=finalImage,\n                                                   brand=brand[0])\n            elif categorymth[0] == 'Материнские платы':\n                try:\n                    models.Motherboard.objects.get(title=fnTitle[0],\n                                                   link=finalLink,\n                                                   price=fnPrice[0],\n                                                   image=finalImage,\n                                                   brand=brand[0])\n                except:\n                    models.Motherboard.objects.create_unit(title=fnTitle[0],\n                                                           link=finalLink,\n                                                           price=fnPrice[0],\n                                                           image=finalImage,\n                                                           brand=brand[0])\n# def parse():\n#     title = ''\n#     link = ''\n#     a = 0\n#     url = urlopen('https://www.citilink.ru/catalog/computers_and_notebooks/parts/cpu/')\n#     html = url.read().decode('UTF-8')\n#     regex_link = '<div class=\"wrap-img\"><a href=\"(.*)\"'\n#     link_list = re.findall(regex_link, html)\n#     regex_title = '<span class=\"image_container\"></span>(.*)&nbsp;(.*)\\s{16}</a>'\n#     # regex_annotation = '<p class=\"short_description\">(.*)&nbsp;&#151;\\s(.*)&nbsp;&#151;\\s(.*)&nbsp;&#151;\\s(.*)</p>'\n#     title_list = re.findall(regex_title, html)\n#     print(len(title_list))\n#     print(len(link_list))\n#     link_list.remove('https://www.citilink.ru/catalog/computers_and_notebooks/parts/cpu/1067853/')\n#     for c in range(0, len(title_list)):\n#         b = title_list[c]\n#         title = b[0] + ' ' + b[1]\n#         m = link_list[c]\n#         link = m\n#         try:\n#             models.Processor.objects.get(title=title, link=link)\n#         except:\n#             models.Processor.objects.create_unit(title=title, link=link)\n#             models.Processor.objects.create_unit(title=title, link=finalLink, price=finalPrice)\n\n\ndef index(request):\n    processors = models.Processor.objects.all()\n    gpus = models.GPU.objects.all()\n    motherboards = models.Motherboard.objects.all()\n    resultprc = random.choice(processors)\n    resultgpu = random.choice(gpus)\n    resultmth = random.choice(motherboards)\n    context = {\n        'prc': resultprc,\n        'gpu': resultgpu,\n        'mth': resultmth,\n    }\n    return render(request, \"index.html\", context)\n\n\ndef processor_list(request):\n    all_processors = models.Processor.objects.all()\n    parse('https://bit.ly/2VQnLik')\n    context = {\n        'processors': all_processors,\n    }\n    return render(request, \"processorList.html\", context)\n\n\ndef gpu_list(request):\n    brand_gpu_query = []\n    all_gpus = models.GPU.objects.all()\n    for gpu in all_gpus:\n        if gpu.brand_name not in brand_gpu_query:\n            brand_gpu_query.append(gpu.brand_name)\n    parse('https://bit.ly/2WaZ1QO')\n    context = {\n        'gpus': all_gpus,\n        'gpu_query': brand_gpu_query,\n    }\n    return render(request, \"gpuList.html\", context)\n\n\ndef results(request):\n    processors = None\n    gpus = None\n    postavka = ''\n    brand = ''\n    search = request.GET.get('search', '')\n    price = request.GET.get('price', '')\n    manufacturer_amd = request.GET.get('manufacturer_amd', '')\n    manufacturer_intel = request.GET.get('manufacturer_intel', '')\n    manufacturer_msi = request.GET.get('manufacturer_msi', '')\n    manufacturer_gigabyte = request.GET.get('manufacturer_gigabyte', '')\n    manufacturer_palit = request.GET.get('manufacturer_palit', '')\n    manufacturer_asus = request.GET.get('manufacturer_asus', '')\n    in_oem = request.GET.get('in_oem', '')\n    in_box = request.GET.get('in_box', '')\n    if in_oem == 'on':\n        postavka = 'OEM'\n        processors = models.Processor.objects.filter(title__icontains=postavka)\n    elif in_box == 'on':\n        postavka = 'BOX'\n        processors = models.Processor.objects.filter(title__icontains=postavka)\n    if manufacturer_amd == 'on':\n        brand = 'AMD'\n        processors = models.Processor.objects.filter(brand_name=brand)\n    elif manufacturer_intel == 'on':\n        brand = 'INTEL'\n        processors = models.Processor.objects.filter(brand_name=brand)\n    elif manufacturer_msi == 'on':\n        brand = 'MSI'\n        gpus = models.GPU.objects.filter(brand_name=brand)\n    elif manufacturer_gigabyte == 'on':\n        brand = 'GIGABYTE'\n        gpus = models.GPU.objects.filter(brand_name=brand)\n    elif manufacturer_palit == 'on':\n        brand = 'PALIT'\n        gpus = models.GPU.objects.filter(brand_name=brand)\n    elif manufacturer_asus == 'on':\n        brand = 'ASUS'\n        gpus = models.GPU.objects.filter(brand_name=brand)\n    if len(price) > 0:\n        price = price\n        processors = models.Processor.objects.filter(price=price)\n        gpus = models.GPU.objects.filter(price=price)\n    if len(postavka) > 0 and len(brand) > 0:\n        processors = models.Processor.objects.filter(title__icontains=postavka, brand_name=brand)\n    elif len(brand) > 0 and len(price) > 0:\n        processors = models.Processor.objects.filter(brand_name=brand, price=price)\n        gpus = models.GPU.objects.filter(brand_name=brand, price=price)\n    elif len(postavka) > 0 and len(brand) > 0 and len(price) > 0:\n        processors = models.Processor.objects.filter(title__icontains=postavka, brand_name=brand, price=price)\n    if len(search) > 0:\n        sprc = re.findall('ПРОЦЕССОР ЗА (\\d*)', search.upper())\n        sgpu = re.findall('ВИДЕОКАРТА ЗА (\\d*)', search.upper())\n        if len(sprc) > 0 or len(sgpu) > 0:\n            if len(sprc) > 0:\n                srchprc = re.findall('ПРОЦЕССОР ЗА (\\d*)', search.upper())\n                processors = models.Processor.objects.filter(price=srchprc[0])\n            elif len(sgpu) > 0:\n                srchpgu = re.findall('ВИДЕОКАРТА ЗА (\\d*)', search.upper())\n                gpus = models.GPU.objects.filter(price=srchpgu[0])\n        else:\n            processors = models.Processor.objects.filter(title__icontains=search)\n            gpus = models.GPU.objects.filter(title__icontains=search)\n    if search.upper() == 'ПРОЦЕССОРЫ':\n        return HttpResponseRedirect(\"/processors/\")\n    elif search.upper() == 'ВИДЕОКАРТЫ':\n        return HttpResponseRedirect(\"/gpus/\")\n    context = {\n        'processsors': processors,\n        'gpus': gpus,\n    }\n    return render(request, \"results.html\", context)\n\n\ndef processor(request, processor_id):\n    processor = models.Processor.objects.get(id=processor_id)\n    properties = parce_processor_properties(processor)\n    context = {\n        'processor': processor,\n        'properties': properties,\n    }\n    return render(request, \"processor.html\", context)\n\n\ndef gpu(request, gpu_id):\n    gpu = models.GPU.objects.get(id=gpu_id)\n    properties = parce_processor_properties(gpu)\n    context = {\n        'videokarta': gpu,\n        'properties': properties,\n    }\n    return render(request, \"gpu.html\", context)\n\n\ndef motherboards(request):\n    motherboards = models.Motherboard.objects.all()\n    parse(\"https://bit.ly/2LrPujh\")\n    context = {\n        'motherboards': motherboards,\n\n    }\n    return render(request, \"motherboardList.html\", context)\n\n\ndef motherboard(request, motherboard_id):\n    mthboard = models.Motherboard.objects.get(id=motherboard_id)\n    properties = parce_processor_properties(mthboard)\n    context = {\n        'mthboard': mthboard,\n        'properties': properties,\n    }\n    return render(request, \"motherboard.html\", context)\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- KvantProject2020/mainapp/views.py	(revision 4f5bfbaf951682abc637994f8eeab130fb90f4c1)
++++ KvantProject2020/mainapp/views.py	(date 1589944471453)
+@@ -98,30 +98,6 @@
+                                                            price=fnPrice[0],
+                                                            image=finalImage,
+                                                            brand=brand[0])
+-# def parse():
+-#     title = ''
+-#     link = ''
+-#     a = 0
+-#     url = urlopen('https://www.citilink.ru/catalog/computers_and_notebooks/parts/cpu/')
+-#     html = url.read().decode('UTF-8')
+-#     regex_link = '<div class="wrap-img"><a href="(.*)"'
+-#     link_list = re.findall(regex_link, html)
+-#     regex_title = '<span class="image_container"></span>(.*)&nbsp;(.*)\s{16}</a>'
+-#     # regex_annotation = '<p class="short_description">(.*)&nbsp;&#151;\s(.*)&nbsp;&#151;\s(.*)&nbsp;&#151;\s(.*)</p>'
+-#     title_list = re.findall(regex_title, html)
+-#     print(len(title_list))
+-#     print(len(link_list))
+-#     link_list.remove('https://www.citilink.ru/catalog/computers_and_notebooks/parts/cpu/1067853/')
+-#     for c in range(0, len(title_list)):
+-#         b = title_list[c]
+-#         title = b[0] + ' ' + b[1]
+-#         m = link_list[c]
+-#         link = m
+-#         try:
+-#             models.Processor.objects.get(title=title, link=link)
+-#         except:
+-#             models.Processor.objects.create_unit(title=title, link=link)
+-#             models.Processor.objects.create_unit(title=title, link=finalLink, price=finalPrice)
+ 
+ 
+ def index(request):
+@@ -202,16 +178,29 @@
+         brand = 'ASUS'
+         gpus = models.GPU.objects.filter(brand_name=brand)
+     if len(price) > 0:
+-        price = price
+-        processors = models.Processor.objects.filter(price=price)
+-        gpus = models.GPU.objects.filter(price=price)
+-    if len(postavka) > 0 and len(brand) > 0:
++        processors = []
++        gpus = []
++        m = range(int(price) - 1500, int(price) + 1500)
++        price = m
++        for i in m:
++            processors += models.Processor.objects.filter(price=i)
++            gpus += models.GPU.objects.filter(price=i)
++    if len(postavka) > 0 and len(brand) > 0 and len(price) == 0:
++        processors = []
++        gpus = []
+         processors = models.Processor.objects.filter(title__icontains=postavka, brand_name=brand)
+-    elif len(brand) > 0 and len(price) > 0:
+-        processors = models.Processor.objects.filter(brand_name=brand, price=price)
+-        gpus = models.GPU.objects.filter(brand_name=brand, price=price)
+-    elif len(postavka) > 0 and len(brand) > 0 and len(price) > 0:
+-        processors = models.Processor.objects.filter(title__icontains=postavka, brand_name=brand, price=price)
++        print(len(price))
++    elif len(postavka) == 0 and len(brand) > 0 and len(price) > 0:
++        processors = []
++        gpus = []
++        for i in price:
++            processors += models.Processor.objects.filter(brand_name=brand, price=i)
++            gpus += models.GPU.objects.filter(brand_name=brand, price=i)
++    elif len(price) > 0 and len(postavka) > 0 and len(brand) > 0:
++        processors = []
++        gpus = []
++        for i in price:
++            processors += models.Processor.objects.filter(title__icontains=postavka, brand_name=brand, price=i)
+     if len(search) > 0:
+         sprc = re.findall('ПРОЦЕССОР ЗА (\d*)', search.upper())
+         sgpu = re.findall('ВИДЕОКАРТА ЗА (\d*)', search.upper())
+Index: templates/processor.html
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>{% extends \"index.html\" %}\n\n    {% block content %}\n        <div class=\"productBlock\">\n            <img width=\"200px\" src=\"{{ processor.image }}\" class=\"productImg\">\n            <h2 class=\"prcsr-title\" >{{ processor.title }}</h2><br>\n            <h3 class=\"prcsr-price\">{{ processor.price }} руб.</h3>\n            <button class=\"btn btn-warning \" style=\"position: relative; top:20vh; right: 7.5vw; width: 150px; height: 40px\">Купить</button>\n        </div>\n        <div class=\"annBlock\">\n            <h4 >Описание</h4>\n            <p class=\"prcsr-annotation\">{{ processor.annotation }}</p>\n        </div>\n    {% endblock %}\n\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- templates/processor.html	(revision 4f5bfbaf951682abc637994f8eeab130fb90f4c1)
++++ templates/processor.html	(date 1589942294783)
+@@ -3,7 +3,7 @@
+     {% block content %}
+         <div class="productBlock">
+             <img width="200px" src="{{ processor.image }}" class="productImg">
+-            <h2 class="prcsr-title" >{{ processor.title }}</h2><br>
++            <h2 class="prcsr-title">{{ processor.title }}</h2><br>
+             <h3 class="prcsr-price">{{ processor.price }} руб.</h3>
+             <button class="btn btn-warning " style="position: relative; top:20vh; right: 7.5vw; width: 150px; height: 40px">Купить</button>
+         </div>
+Index: templates/gpu.html
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>{% extends \"index.html\" %}\n\n    {% block content %}\n        <div class=\"productBlock\">\n            <img width=\"200px\" class=\"productImg\" src=\"{{ videokarta.image }}\">\n            <h2 style=\"position:relative;right: 100px\" >{{ videokarta.title }}</h2><br>\n            <h3 class=\"prcsr-price\">{{ videokarta.price }} руб.</h3>\n            <button class=\"btn btn-warning \" style=\"position: relative; top:20vh;left: 133px; width: 150px; height: 40px\">Купить</button>\n        </div>\n        <div class=\"annBlock\">\n            <h4 >Описание</h4>\n            <p class=\"prcsr-annotation\">{{ gpu.annotation }}</p>\n        </div>\n    {% endblock %}\n\n</body>\n</html>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- templates/gpu.html	(revision 4f5bfbaf951682abc637994f8eeab130fb90f4c1)
++++ templates/gpu.html	(date 1589944660182)
+@@ -9,7 +9,7 @@
+         </div>
+         <div class="annBlock">
+             <h4 >Описание</h4>
+-            <p class="prcsr-annotation">{{ gpu.annotation }}</p>
++            <p class="prcsr-annotation">{{ videokarta.annotation }}</p>
+         </div>
+     {% endblock %}
+ 

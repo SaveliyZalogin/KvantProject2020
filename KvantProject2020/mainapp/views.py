@@ -98,30 +98,6 @@ def parse(product_list_link):
                                                            price=fnPrice[0],
                                                            image=finalImage,
                                                            brand=brand[0])
-# def parse():
-#     title = ''
-#     link = ''
-#     a = 0
-#     url = urlopen('https://www.citilink.ru/catalog/computers_and_notebooks/parts/cpu/')
-#     html = url.read().decode('UTF-8')
-#     regex_link = '<div class="wrap-img"><a href="(.*)"'
-#     link_list = re.findall(regex_link, html)
-#     regex_title = '<span class="image_container"></span>(.*)&nbsp;(.*)\s{16}</a>'
-#     # regex_annotation = '<p class="short_description">(.*)&nbsp;&#151;\s(.*)&nbsp;&#151;\s(.*)&nbsp;&#151;\s(.*)</p>'
-#     title_list = re.findall(regex_title, html)
-#     print(len(title_list))
-#     print(len(link_list))
-#     link_list.remove('https://www.citilink.ru/catalog/computers_and_notebooks/parts/cpu/1067853/')
-#     for c in range(0, len(title_list)):
-#         b = title_list[c]
-#         title = b[0] + ' ' + b[1]
-#         m = link_list[c]
-#         link = m
-#         try:
-#             models.Processor.objects.get(title=title, link=link)
-#         except:
-#             models.Processor.objects.create_unit(title=title, link=link)
-#             models.Processor.objects.create_unit(title=title, link=finalLink, price=finalPrice)
 
 
 def index(request):
@@ -168,7 +144,7 @@ def results(request):
     postavka = ''
     brand = ''
     search = request.GET.get('search', '')
-    price = request.GET.get('price', '')
+    getprice = request.GET.get('price', '')
     manufacturer_amd = request.GET.get('manufacturer_amd', '')
     manufacturer_intel = request.GET.get('manufacturer_intel', '')
     manufacturer_msi = request.GET.get('manufacturer_msi', '')
@@ -201,17 +177,30 @@ def results(request):
     elif manufacturer_asus == 'on':
         brand = 'ASUS'
         gpus = models.GPU.objects.filter(brand_name=brand)
-    if len(price) > 0:
-        price = price
-        processors = models.Processor.objects.filter(price=price)
-        gpus = models.GPU.objects.filter(price=price)
-    if len(postavka) > 0 and len(brand) > 0:
+    if len(getprice) > 0:
+        processors = []
+        gpus = []
+        m = range(int(getprice) - 1500, int(getprice) + 1500)
+        price = m
+        for i in m:
+            processors += models.Processor.objects.filter(price=i)
+            gpus += models.GPU.objects.filter(price=i)
+    if len(postavka) > 0 and len(brand) > 0 and len(price) == 0:
+        processors = []
+        gpus = []
         processors = models.Processor.objects.filter(title__icontains=postavka, brand_name=brand)
-    elif len(brand) > 0 and len(price) > 0:
-        processors = models.Processor.objects.filter(brand_name=brand, price=price)
-        gpus = models.GPU.objects.filter(brand_name=brand, price=price)
-    elif len(postavka) > 0 and len(brand) > 0 and len(price) > 0:
-        processors = models.Processor.objects.filter(title__icontains=postavka, brand_name=brand, price=price)
+        print(len(price))
+    elif len(postavka) == 0 and len(brand) > 0 and len(price) > 0:
+        processors = []
+        gpus = []
+        for i in price:
+            processors += models.Processor.objects.filter(brand_name=brand, price=i)
+            gpus += models.GPU.objects.filter(brand_name=brand, price=i)
+    elif len(price) > 0 and len(postavka) > 0 and len(brand) > 0:
+        processors = []
+        gpus = []
+        for i in price:
+            processors += models.Processor.objects.filter(title__icontains=postavka, brand_name=brand, price=i)
     if len(search) > 0:
         sprc = re.findall('ПРОЦЕССОР ЗА (\d*)', search.upper())
         sgpu = re.findall('ВИДЕОКАРТА ЗА (\d*)', search.upper())
@@ -232,6 +221,7 @@ def results(request):
     context = {
         'processsors': processors,
         'gpus': gpus,
+        'price': getprice,
     }
     return render(request, "results.html", context)
 

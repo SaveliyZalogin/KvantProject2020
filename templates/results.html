@@ -2,8 +2,20 @@
 
     {% block content %}
         {% if processsors %}
+            <div class="filters">
+            <form class="form-inline my-2 my-lg-0" action="{% url 'results' %}">
+              <div>
+              <input class="form-control mr-sm-2" name="price" type="search" placeholder="Цена" aria-label="Цена" value="{{ price }}">
+              <p>Производитель:</p>
+              <p>AMD <input style="margin-right: 20px" name="manufacturer_amd" type="checkbox" placeholder="Производитель">Intel<input name="manufacturer_intel" type="checkbox" placeholder="Производитель"></p>
+              <p>Тип поставки:</p>
+              <p>BOX <input style="margin-right: 20px" name="in_box" type="checkbox">OEM<input name="in_oem" type="checkbox"></p>
+              <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+              </div>
+            </form>
+        </div>
             {% for processor in processsors %}
-            <div class="resProcessor">
+            <div class="processor">
                 <a role="button" style="color: black; text-decoration: none; width: 20%" href="{% url 'processor' processor.id %}">
                     <ul>
                         <li><img src="{{ processor.image }}"></li>
