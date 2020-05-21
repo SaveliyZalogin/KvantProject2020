@@ -5,7 +5,11 @@
             <div class="filters">
             <form class="form-inline my-2 my-lg-0" action="{% url 'results' %}">
               <div>
-              <input class="form-control mr-sm-2" name="price" type="search" placeholder="Цена" aria-label="Цена" value="{{ price }}">
+              {% if price %}
+                  <input class="form-control mr-sm-2" name="price" type="search" placeholder="Цена" aria-label="Цена" value="{{ price }}">
+              {% else %}
+                  <input class="form-control mr-sm-2" name="price" type="search" placeholder="Цена" aria-label="Цена">
+              {% endif %}
               <p>Производитель:</p>
               <p>AMD <input style="margin-right: 20px" name="manufacturer_amd" type="checkbox" placeholder="Производитель">Intel<input name="manufacturer_intel" type="checkbox" placeholder="Производитель"></p>
               <p>Тип поставки:</p>

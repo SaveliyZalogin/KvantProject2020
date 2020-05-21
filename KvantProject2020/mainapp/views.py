@@ -185,18 +185,18 @@ def results(request):
         for i in m:
             processors += models.Processor.objects.filter(price=i)
             gpus += models.GPU.objects.filter(price=i)
-    if len(postavka) > 0 and len(brand) > 0 and len(price) == 0:
+    if len(postavka) > 0 and len(brand) > 0 and len(getprice) == 0:
         processors = []
         gpus = []
         processors = models.Processor.objects.filter(title__icontains=postavka, brand_name=brand)
-        print(len(price))
-    elif len(postavka) == 0 and len(brand) > 0 and len(price) > 0:
+        print(len(getprice))
+    elif len(postavka) == 0 and len(brand) > 0 and len(getprice) > 0:
         processors = []
         gpus = []
         for i in price:
             processors += models.Processor.objects.filter(brand_name=brand, price=i)
             gpus += models.GPU.objects.filter(brand_name=brand, price=i)
-    elif len(price) > 0 and len(postavka) > 0 and len(brand) > 0:
+    elif len(getprice) > 0 and len(postavka) > 0 and len(brand) > 0:
         processors = []
         gpus = []
         for i in price:
@@ -218,10 +218,17 @@ def results(request):
         return HttpResponseRedirect("/processors/")
     elif search.upper() == 'ВИДЕОКАРТЫ':
         return HttpResponseRedirect("/gpus/")
-    context = {
-        'processsors': processors,
-        'gpus': gpus,
-    }
+    if len(getprice) > 0:
+        context = {
+            'processsors': processors,
+            'gpus': gpus,
+            'price': getprice,
+        }
+    else:
+        context = {
+            'processsors': processors,
+            'gpus': gpus,
+        }
     return render(request, "results.html", context)
 
 
