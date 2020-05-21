@@ -221,7 +221,6 @@ def results(request):
     context = {
         'processsors': processors,
         'gpus': gpus,
-        'price': getprice,
     }
     return render(request, "results.html", context)
 
